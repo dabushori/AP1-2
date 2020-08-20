@@ -8,8 +8,12 @@ extern "C" {
 #endif 
 
 typedef enum {
-    // DON'T CHANGE THIS VALUE!
-    ERROR_SUCCESS = 0,
+  // DON'T CHANGE THIS VALUE!
+  ERROR_SUCCESS = 0,
+  ERROR_NULL,
+  ERROR_ALLOCATION_FAILED,
+  ERROR_OUT_OF_BOUNDS,
+  ERROR_SIZES_NOT_MATCH,
 } ErrorCode;
 
 /**
