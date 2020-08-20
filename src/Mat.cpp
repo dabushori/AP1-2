@@ -94,7 +94,7 @@ Mat Mat::multiplyByScalar(const double scalar) const {
   return matrix;
 }
 
-double Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex) {
+double Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex) const {
   double result;
   ErrorCode code = matrix_getValue(this->m_matrix, rowIndex, colIndex, &result);
   if (!error_isSuccess(code)) {
