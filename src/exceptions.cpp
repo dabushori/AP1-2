@@ -13,4 +13,4 @@ ErrorCodesException::ErrorCodesException(const ErrorCode code) {
 const char *ErrorCodesException::what() const noexcept {
   return error_getErrorMessage(code);
 }
-}; // namespace exceptions
+} // namespace exceptions

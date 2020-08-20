@@ -102,5 +102,4 @@ double Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex) {
   }
   return result;
 }
-
 } // namespace matrix
