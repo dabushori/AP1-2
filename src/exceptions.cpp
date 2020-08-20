@@ -1,17 +1,16 @@
+#include "exceptions.hpp"
+
 #include "ErrorCode.h"
 #include "Matrix.h"
 
 #include <exception>
 
 namespace exceptions {
-class ErrorCodesException : public std::exception {
-  ErrorCode code;
+ErrorCodesException::ErrorCodesException(const ErrorCode code) {
+  this->code = code;
+}
 
-public:
-  ErrorCodesException(const ErrorCode code) { this->code = code; }
-
-  const char *what() const noexcept override {
-    return error_getErrorMessage(code);
-  }
-};
+const char *ErrorCodesException::what() const noexcept {
+  return error_getErrorMessage(code);
+}
 }; // namespace exceptions
