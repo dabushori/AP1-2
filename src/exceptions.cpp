@@ -1,5 +1,6 @@
 #include "ErrorCode.h"
 #include "Matrix.h"
+
 #include <exception>
 
 namespace exceptions {
