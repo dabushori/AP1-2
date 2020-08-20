@@ -21,11 +21,9 @@ namespace matrix {
 	    *this = Mat(other); 
 	    return *this;
     }
-    // Move Constructor
     Mat::Mat(Mat&& other) noexcept {
         m_matrix = std::exchange(other.m_matrix, nullptr);
     }
-    // Move assignment operator
     Mat& Mat::operator=(Mat&& other) noexcept {
         if (this == &other) {
 		return *this;
@@ -34,7 +32,6 @@ namespace matrix {
 	    m_matrix = std::exchange(other.m_matrix, nullptr);
 	    return *this;
     }
-    // destructor
     Mat::~Mat() {
         matrix_destroy(m_matrix);
     }

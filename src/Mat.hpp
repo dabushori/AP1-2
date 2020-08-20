@@ -1,7 +1,8 @@
 #pragma once
 #include <stdint.h>
+#include <utility>
 #include "Matrix.h"
-
+#include "exceptions.hpp"
 namespace matrix {
 //Our matrix class
 class Mat {
