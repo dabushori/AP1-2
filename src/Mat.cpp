@@ -66,7 +66,7 @@ void Mat::setValue(const uint32_t rowIndex, const uint32_t colIndex,
   }
 }
 
-Mat Mat::add(const Mat &other) const {
+Mat &Mat::add(const Mat &other) const {
   Mat matrix(getHeight(), getWidth());
   ErrorCode code = matrix_add(&matrix.m_matrix, m_matrix, other.m_matrix);
   if (!error_isSuccess(code)) {
@@ -75,7 +75,7 @@ Mat Mat::add(const Mat &other) const {
   return matrix;
 }
 
-Mat Mat::multiplyMatrices(const Mat &other) const {
+Mat &Mat::multiplyMatrices(const Mat &other) const {
   Mat matrix(getHeight(), getWidth());
   ErrorCode code =
       matrix_multiplyMatrices(&matrix.m_matrix, m_matrix, other.m_matrix);
@@ -85,7 +85,7 @@ Mat Mat::multiplyMatrices(const Mat &other) const {
   return matrix;
 }
 
-Mat Mat::multiplyByScalar(const double scalar) const {
+Mat &Mat::multiplyByScalar(const double scalar) const {
   Mat matrix(*this);
   ErrorCode code = matrix_multiplyWithScalar(matrix.m_matrix, scalar);
   if (!error_isSuccess(code)) {
