@@ -1,13 +1,12 @@
 #pragma once
 
 #include "ErrorCode.h"
-#include "Matrix.h"
 
 #include <exception>
 
 namespace exceptions {
 class ErrorCodesException : public std::exception {
-  ErrorCode code;
+  ErrorCode m_code;
 
 public:
   /**

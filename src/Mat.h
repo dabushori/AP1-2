@@ -1,9 +1,14 @@
 #pragma once
 
 #include "Matrix.h"
-#include "exceptions.hpp"
+// #include "exceptions.h"
+
 #include <stdint.h>
 #include <utility>
+
+namespace exceptions {
+class ErrorCodesException;
+}
 
 namespace matrix {
 class Mat {
@@ -82,7 +87,7 @@ public:
    * @param other the given matrix
    * @return Mat the result of the addition
    */
-  Mat &add(const Mat &other) const;
+  Mat add(const Mat &other) const;
 
   /**
    * @brief multiply the current matrix and a given matrix
@@ -90,7 +95,7 @@ public:
    * @param other the given matrix
    * @return Mat the result of the multiplication
    */
-  Mat &multiplyMatrices(const Mat &other) const;
+  Mat multiplyMatrices(const Mat &other) const;
 
   /**
    * @brief multiply the current matrix by a given scalar
@@ -98,7 +103,7 @@ public:
    * @param scalar the given scalar
    * @return Mat the result of the multiplication
    */
-  Mat &multiplyByScalar(const double scalar) const;
+  Mat multiplyByScalar(const double scalar) const;
 
   /**
    * @brief get the value in the rowIndex,colIndex cell of the current matrix
