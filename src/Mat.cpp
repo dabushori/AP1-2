@@ -42,7 +42,7 @@ Mat::~Mat() { matrix_destroy(this->m_matrix); }
 
 uint32_t Mat::getHeight() const {
   uint32_t result;
-  ErrorCode code = matrix_getHeight(this->m_matrix, &result);
+  ErrorCode code = matrix_getHeight(m_matrix, &result);
   if (!error_isSuccess(code)) {
     throw exceptions::ErrorCodesException(code);
   }
@@ -51,7 +51,7 @@ uint32_t Mat::getHeight() const {
 
 uint32_t Mat::getWidth() const {
   uint32_t result;
-  ErrorCode code = matrix_getWidth(this->m_matrix, &result);
+  ErrorCode code = matrix_getWidth(m_matrix, &result);
   if (!error_isSuccess(code)) {
     throw exceptions::ErrorCodesException(code);
   }
@@ -60,15 +60,15 @@ uint32_t Mat::getWidth() const {
 
 void Mat::setValue(const uint32_t rowIndex, const uint32_t colIndex,
                    const double value) {
-  ErrorCode code = matrix_setValue(this->m_matrix, rowIndex, colIndex, value);
+  ErrorCode code = matrix_setValue(m_matrix, rowIndex, colIndex, value);
   if (!error_isSuccess(code)) {
     throw exceptions::ErrorCodesException(code);
   }
 }
 
 Mat Mat::add(const Mat &other) const {
-  Mat matrix(this->getHeight(), this->getWidth());
-  ErrorCode code = matrix_add(&matrix.m_matrix, this->m_matrix, other.m_matrix);
+  Mat matrix(getHeight(), getWidth());
+  ErrorCode code = matrix_add(&matrix.m_matrix, m_matrix, other.m_matrix);
   if (!error_isSuccess(code)) {
     throw exceptions::ErrorCodesException(code);
   }
@@ -76,9 +76,9 @@ Mat Mat::add(const Mat &other) const {
 }
 
 Mat Mat::multiplyMatrices(const Mat &other) const {
-  Mat matrix(this->getHeight(), this->getWidth());
+  Mat matrix(getHeight(), getWidth());
   ErrorCode code =
-      matrix_multiplyMatrices(&matrix.m_matrix, this->m_matrix, other.m_matrix);
+      matrix_multiplyMatrices(&matrix.m_matrix, m_matrix, other.m_matrix);
   if (!error_isSuccess(code)) {
     throw exceptions::ErrorCodesException(code);
   }
@@ -86,8 +86,8 @@ Mat Mat::multiplyMatrices(const Mat &other) const {
 }
 
 Mat Mat::multiplyByScalar(const double scalar) const {
-  Mat matrix(this->getHeight(), this->getWidth());
-  ErrorCode code = matrix_multiplyWithScalar(this->m_matrix, scalar);
+  Mat matrix(*this);
+  ErrorCode code = matrix_multiplyWithScalar(matrix.m_matrix, scalar);
   if (!error_isSuccess(code)) {
     throw exceptions::ErrorCodesException(code);
   }
@@ -96,7 +96,7 @@ Mat Mat::multiplyByScalar(const double scalar) const {
 
 double Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex) const {
   double result;
-  ErrorCode code = matrix_getValue(this->m_matrix, rowIndex, colIndex, &result);
+  ErrorCode code = matrix_getValue(m_matrix, rowIndex, colIndex, &result);
   if (!error_isSuccess(code)) {
     throw exceptions::ErrorCodesException(code);
   }
