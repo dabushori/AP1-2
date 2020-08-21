@@ -6,8 +6,8 @@
 #include <exception>
 
 namespace exceptions {
-ErrorCodesException::ErrorCodesException(const ErrorCode code) {
-  this->code = code;
+ErrorCodesException::ErrorCodesException(const ErrorCode error) {
+  this->code = error;
 }
 
 const char *ErrorCodesException::what() const noexcept {

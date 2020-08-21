@@ -11,4 +11,4 @@ public:
   ErrorCodesException(const ErrorCode code);
   const char *what() const noexcept override;
 };
-}; // namespace exceptions
+} // namespace exceptions
