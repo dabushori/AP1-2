@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Matrix.h"
 #include "exceptions.hpp"
 #include <stdint.h>

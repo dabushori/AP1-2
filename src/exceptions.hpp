@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ErrorCode.h"
 #include "Matrix.h"
 
