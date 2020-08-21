@@ -1,6 +1,6 @@
 #include "Mat.h"
 
-#include "ErrorCode."
+#include "ErrorCode.h"
 #include "Matrix.h"
 #include "exceptions.h"
 
