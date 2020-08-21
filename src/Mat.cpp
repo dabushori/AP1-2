@@ -20,7 +20,7 @@ Mat &Mat::operator=(const Mat &other) {
   if (this == &other) {
     return *this;
   }
-  delete m_matrix;
+  matrix_destroy(m_matrix);
   *this = Mat(other);
   return *this;
 }
