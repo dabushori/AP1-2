@@ -3,14 +3,14 @@
 
 namespace matrix {
 Mat::Mat(const uint32_t height, const uint32_t width) {
-  ErrorCode code = matrix_create(&this->m_matrix, height, width);
+  ErrorCode code = matrix_create(&m_matrix, height, width);
   if (!error_isSuccess(code)) {
     throw exceptions::ErrorCodesException(code);
   }
 }
 
 Mat::Mat(const Mat &other) {
-  ErrorCode code = matrix_copy(&this->m_matrix, other.m_matrix);
+  ErrorCode code = matrix_copy(&m_matrix, other.m_matrix);
   if (!error_isSuccess(code)) {
     throw exceptions::ErrorCodesException(code);
   }
@@ -21,7 +21,10 @@ Mat &Mat::operator=(const Mat &other) {
     return *this;
   }
   matrix_destroy(m_matrix);
-  m_matrix = other.m_matrix;
+  ErrorCode code = matrix_copy(&m_matrix, other.m_matrix);
+  if (!error_isSuccess(code)) {
+    throw exceptions::ErrorCodesException(code);
+  }
   return *this;
 }
 
