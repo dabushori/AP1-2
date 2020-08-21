@@ -21,7 +21,7 @@ Mat &Mat::operator=(const Mat &other) {
     return *this;
   }
   matrix_destroy(m_matrix);
-  *this = Mat(other);
+  m_matrix = other.m_matrix;
   return *this;
 }
 
