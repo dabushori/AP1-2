@@ -3,8 +3,8 @@
 ## Ori Dabush - 212945760
 * * *
 ### In this assignment we created:
-* Mat.cpp + Mat.hpp - a matrix class in cpp.
-* exceptions.cpp + exceptions.hpp - throwing exceptions.
+* Mat.cpp + Mat.h - a matrix class in cpp.
+* exceptions.cpp + exceptions.h - throwing exceptions.
 * * *
 ## Mat (Matrix) class is doing the following functions:
 * Constructor
