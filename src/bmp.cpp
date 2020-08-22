@@ -1,7 +1,6 @@
 #include "bmp.h"
 
 namespace bmp {
-
 void BMP::rotate_image(const std::string &imagePath,
                        const std::string &outputPath) {}
 
@@ -67,15 +66,15 @@ void BMP::setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
   m_blue = blue;
 }
 
-const int BMP::getBitsPerPixel() { return (int)m_bitsPerPixel[1]; }
+int BMP::getBitsPerPixel() { return (int)m_bitsPerPixel[1]; }
 
-const uint32_t BMP::getNumOfColors() { return m_numOfColors; }
+uint32_t BMP::getNumOfColors() { return m_numOfColors; }
 
-const uint32_t BMP::getPixelArrayAddress() { return m_pixelArrayAddress; }
+uint32_t BMP::getPixelArrayAddress() { return m_pixelArrayAddress; }
 
-const uint32_t BMP::getBitMapWidth() { return m_bitmapWidth; }
+uint32_t BMP::getBitMapWidth() { return m_bitmapWidth; }
 
-const uint32_t BMP::getBitMapHeight() { return m_bitmapHeight; }
+uint32_t BMP::getBitMapHeight() { return m_bitmapHeight; }
 
 const std::map<char, Color> &BMP::getColors() { return m_colors; }
 
@@ -239,24 +238,25 @@ void Parser::parseBitmapArray() {
   uint32_t index = m_picture->getPixelArrayAddress();
   if (m_picture->getBitsPerPixel() == 24) {
     uint32_t padding = width % 4;
-    for (int i = 0; i < height; ++i) {
-      for (int j = 0; j < width; ++j) {
-        red(i, j) = m_data[index];
-        green(i, j) = m_data[index + 1];
-        blue(i, j) = m_data[index + 2];
+    for (uint32_t i = 0; i < height; ++i) {
+      for (uint32_t j = 0; j < width; ++j) {
+        red.setValue(i, j, m_data[index]);
+        green.setValue(i, j, m_data[index + 1]);
+        blue.setValue(i, j, m_data[index + 2]);
+
         index += 3;
       }
       index += padding;
     }
   } else {
     uint32_t padding = 4 - width % 4;
-    for (int i = 0; i < height; ++i) {
-      for (int j = 0; j < width; ++j) {
+    for (uint32_t i = 0; i < height; ++i) {
+      for (uint32_t j = 0; j < width; ++j) {
         char colorNum = m_data[index];
         auto colors = m_picture->getColors();
-        red(i, j) = colors[colorNum].getRed();
-        green(i, j) = colors[colorNum].getGreen();
-        blue(i, j) = colors[colorNum].getBlue();
+        red.setValue(i, j, colors[colorNum].getRed());
+        green.setValue(i, j, colors[colorNum].getGreen());
+        blue.setValue(i, j, colors[colorNum].getBlue());
         ++index;
       }
       index += padding;
@@ -266,6 +266,12 @@ void Parser::parseBitmapArray() {
 }
 
 // Color
+
+Color::Color() {
+  m_red = 0;
+  m_green = 0;
+  m_blue = 0;
+}
 
 Color::Color(char red, char green, char blue) {
   m_red = red;

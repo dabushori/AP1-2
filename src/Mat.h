@@ -13,6 +13,12 @@ private:
 
 public:
   /**
+   * @brief Construct a new Mat object
+   *
+   */
+  Mat();
+
+  /**
    * @brief Construct a new Mat object with size height x width
    *
    * @param height the height of the matrix
@@ -113,15 +119,5 @@ public:
    * @return double the value that is in the cell
    */
   double operator()(const uint32_t rowIndex, const uint32_t colIndex) const;
-
-  /**
-   * @brief get the value (by reference) in the rowIndex,colIndex cell of the
-   * current matrix
-   *
-   * @param rowIndex the row index of the wanted cell
-   * @param colIndex the collumn index of the wanted cell
-   * @return double& reference to the value that is in the cell
-   */
-  double &Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex);
 };
 } // namespace matrix

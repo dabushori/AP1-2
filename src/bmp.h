@@ -14,6 +14,8 @@
 #include <vector>
 
 namespace bmp {
+class Color;
+
 class BMP {
 private:
   // header members
@@ -169,35 +171,35 @@ public:
    *
    * @return const int the Bits Per Pixel member
    */
-  const int getBitsPerPixel();
+  int getBitsPerPixel();
 
   /**
    * @brief Get the Num Of Colors member
    *
    * @return const uint32_t the Num Of Colors member
    */
-  const uint32_t getNumOfColors();
+  uint32_t getNumOfColors();
 
   /**
    * @brief Get the Pixel Array Address member
    *
    * @return const uint32_t the Pixel Array Address member
    */
-  const uint32_t getPixelArrayAddress();
+  uint32_t getPixelArrayAddress();
 
   /**
    * @brief Get the Bit Map Width member
    *
    * @return const uint32_t the Bit Map Width member
    */
-  const uint32_t getBitMapWidth();
+  uint32_t getBitMapWidth();
 
   /**
    * @brief Get the Bit Map Height member
    *
    * @return const uint32_t the Bit Map Height member
    */
-  const uint32_t getBitMapHeight();
+  uint32_t getBitMapHeight();
 
   /**
    * @brief Get the Colors member
@@ -351,6 +353,12 @@ private:
   char m_blue;
 
 public:
+  /**
+   * @brief Construct a new Color object
+   *
+   */
+  Color();
+
   /**
    * @brief Construct a new Color object
    *
