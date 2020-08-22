@@ -30,8 +30,6 @@ private:
   int getPixel(uint32_t i, uint32_t j);
 
 public:
-  BMP() {}
-
   /**
    * @brief Receives a path to a BMP image on the disk and rotates it 90 degrees
    * clockwise, writing the resulting image to the disk.
@@ -55,13 +53,29 @@ public:
    */
   void convert_to_grayscale(const std::string &imagePath,
                             const std::string &outputPath);
+
+  // header setters
+  void setMagic(const char magic[2]); // supposed to be 'BM'
+  void setBmpFileSize(const uint32_t &bmpFileSize);
+  void setPixelArrayAddress(const uint32_t &pixelArrayAddress);
+  // DIB header setters
+  void setHeaderSize(const uint32_t &headerSize); // supposed to be 40
+  void setBitMapWidth(const int &bitmapWidth);
+  void setBitMapHeight(const int &bitmapHeight);
+  void setConstant(const char constant[2]);         // must be 1
+  void setBitPerPixel(const char bitsPerPixel[2]);  // supposed to be 8 or 24
+  void setCompression(const uint32_t &compression); // supposed to be 0
+  void setBitmapSizeWithoutCompression(
+      const uint32_t &bitmapSizeWithoutCompression); // supposed to be 0
+  void setNumOfColors(const uint32_t &numOfColors);
+  // color pallete setters
+  void setColors(const std::vector<int> &colors);
 };
 
 class Parser {
 private:
   std::unique_ptr<BMP> m_picture;
   std::vector<char> m_data;
-  int readbytes(const uint32_t numOfBytes);
   void parseHeader();
   void parseDIBHeader();
   void parseColorPallete();
@@ -69,5 +83,6 @@ private:
 
 public:
   Parser(const std::string &filename);
+  BMP &getPicture();
 };
 } // namespace bmp
