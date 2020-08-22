@@ -59,8 +59,8 @@ public:
 
 class Parser {
 private:
-  std::unique_ptr<BMP> picture;
-  std::vector<char> data;
+  std::unique_ptr<BMP> m_picture;
+  std::vector<char> m_data;
   int readbytes(const uint32_t numOfBytes);
   void parseHeader();
   void parseDIBHeader();

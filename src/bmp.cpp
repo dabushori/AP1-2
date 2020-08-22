@@ -2,9 +2,10 @@
 
 namespace bmp {
 Parser::Parser(const std::string &filename) {
-  picture = std::make_unique<BMP>();
+  m_picture = std::make_unique<BMP>();
   std::ifstream in(filename, std::ios::binary);
-  data = {std::istreambuf_iterator<char>{in}, std::istreambuf_iterator<char>{}};
+  m_data = {std::istreambuf_iterator<char>{in},
+            std::istreambuf_iterator<char>{}};
   parseHeader();
   parseDIBHeader();
   parseColorPallete();

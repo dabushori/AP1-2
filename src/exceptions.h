@@ -1,13 +1,14 @@
 #pragma once
 
 #include "ErrorCode.h"
+#include <exception>
 #include <string.h>
 #include <string>
-#include <exception>
 
 namespace exceptions {
 class ErrorCodesException : public std::exception {
   ErrorCode m_code;
+
 public:
   /**
    * @brief Construct a new Error Codes Exception object using a given ErrorCode
@@ -25,14 +26,15 @@ public:
 };
 
 class BMPException : public std::exception {
-  std::string message;
+  std::string m_message;
+
 public:
   /**
    * @brief Construct a new BMP Exception object using a given string
    *
    * @param message the given string that is thrown
    */
-  BMPException(const std::string& message);
+  BMPException(const std::string &message);
 
   /**
    * @brief gets the error message
