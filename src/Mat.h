@@ -1,17 +1,16 @@
 #pragma once
 
 #include "Matrix.h"
-// #include "exceptions.h"
+#include "exceptions.h"
 
 #include <stdint.h>
 #include <utility>
 
-namespace exceptions {
-class ErrorCodesException;
-}
-
 namespace matrix {
 class Mat {
+private:
+  Matrix *m_matrix;
+
 public:
   /**
    * @brief Construct a new Mat object with size height x width
@@ -124,8 +123,5 @@ public:
    * @return double& reference to the value that is in the cell
    */
   double &Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex);
-
-private:
-  Matrix *m_matrix;
 };
 } // namespace matrix

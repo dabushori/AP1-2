@@ -1,12 +1,14 @@
 #pragma once
 
 #include "ErrorCode.h"
+
 #include <exception>
 #include <string.h>
 #include <string>
 
 namespace exceptions {
 class ErrorCodesException : public std::exception {
+private:
   ErrorCode m_code;
 
 public:
@@ -26,6 +28,7 @@ public:
 };
 
 class BMPException : public std::exception {
+private:
   std::string m_message;
 
 public:

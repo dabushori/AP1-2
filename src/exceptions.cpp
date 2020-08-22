@@ -1,5 +1,7 @@
 #include "exceptions.h"
+
 #include "ErrorCode.h"
+
 #include <exception>
 
 namespace exceptions {
