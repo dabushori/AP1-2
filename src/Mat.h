@@ -106,13 +106,24 @@ public:
   Mat multiplyByScalar(const double scalar) const;
 
   /**
-   * @brief get the value in the rowIndex,colIndex cell of the current matrix
+   * @brief get the value (by value) in the rowIndex,colIndex cell of the
+   * current matrix
    *
    * @param rowIndex the row index of the wanted cell
    * @param colIndex the collumn index of the wanted cell
    * @return double the value that is in the cell
    */
   double operator()(const uint32_t rowIndex, const uint32_t colIndex) const;
+
+  /**
+   * @brief get the value (by reference) in the rowIndex,colIndex cell of the
+   * current matrix
+   *
+   * @param rowIndex the row index of the wanted cell
+   * @param colIndex the collumn index of the wanted cell
+   * @return double& reference to the value that is in the cell
+   */
+  double &Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex);
 
 private:
   Matrix *m_matrix;

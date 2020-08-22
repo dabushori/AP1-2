@@ -108,4 +108,13 @@ double Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex) const {
   }
   return result;
 }
+
+double &Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex) {
+  double result;
+  ErrorCode code = matrix_getValue(m_matrix, rowIndex, colIndex, &result);
+  if (!error_isSuccess(code)) {
+    throw exceptions::ErrorCodesException(code);
+  }
+  return result;
+}
 } // namespace matrix
