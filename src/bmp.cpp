@@ -2,6 +2,83 @@
 
 namespace bmp {
 
+void BMP::rotate_image(const std::string &imagePath,
+                       const std::string &outputPath) {}
+
+void BMP::convert_to_grayscale(const std::string &imagePath,
+                               const std::string &outputPath) {}
+
+// BMP
+
+void BMP::setMagic(const char magic[2]) {
+  m_magic[0] = magic[0];
+  m_magic[1] = magic[1];
+}
+
+void BMP::setBmpFileSize(const uint32_t &bmpFileSize) {
+  m_bmpFileSize = bmpFileSize;
+}
+
+void BMP::setPixelArrayAddress(const uint32_t &pixelArrayAddress) {
+  m_pixelArrayAddress = pixelArrayAddress;
+}
+
+void BMP::setHeaderSize(const uint32_t &headerSize) {
+  m_headerSize = headerSize;
+}
+
+void BMP::setBitMapWidth(const int &bitmapWidth) {
+  m_bitmapWidth = bitmapWidth;
+}
+
+void BMP::setBitMapHeight(const int &bitmapHeight) {
+  m_bitmapHeight = bitmapHeight;
+}
+
+void BMP::setConstant(const char constant[2]) {
+  m_constant[0] = constant[0];
+  m_constant[1] = constant[1];
+}
+
+void BMP::setBitsPerPixel(const char bitsPerPixel[2]) {
+  m_bitsPerPixel[0] = bitsPerPixel[0];
+  m_bitsPerPixel[1] = bitsPerPixel[1];
+}
+
+void BMP::setCompression(const uint32_t &compression) {
+  m_compression = compression;
+}
+
+void BMP::setBitmapSizeWithoutCompression(
+    const uint32_t &bitmapSizeWithoutCompression) {
+  m_bitmapSizeWithoutCompression = bitmapSizeWithoutCompression;
+}
+
+void BMP::setNumOfColors(const uint32_t &numOfColors) {
+  m_numOfColors = numOfColors;
+}
+
+void BMP::setColors(const std::map<char, Color> &colors) { m_colors = colors; }
+
+void BMP::setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
+                         const matrix::Mat &blue) {
+  m_red = red;
+  m_green = green;
+  m_blue = blue;
+}
+
+const int BMP::getBitsPerPixel() { return (int)m_bitsPerPixel[1]; }
+
+const uint32_t BMP::getNumOfColors() { return m_numOfColors; }
+
+const uint32_t BMP::getPixelArrayAddress() { return m_pixelArrayAddress; }
+
+const uint32_t BMP::getBitMapWidth() { return m_bitmapWidth; }
+
+const uint32_t BMP::getBitMapHeight() { return m_bitmapHeight; }
+
+const std::map<char, Color> &BMP::getColors() { return m_colors; }
+
 // Parser
 
 Parser::Parser(const std::string &filename) {
@@ -121,7 +198,7 @@ void Parser::parseNumOfColors() {
   m_picture->setNumOfColors(numOfColors);
 }
 
-uint32_t bytesToUnsignedInt(const char bytes[4]) {
+uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) {
   uint32_t result = bytes[0];
   for (auto i = 1; i < 4; i++) {
     result <<= 8;
@@ -130,7 +207,7 @@ uint32_t bytesToUnsignedInt(const char bytes[4]) {
   return result;
 }
 
-int bytesToSignedInt(const char bytes[4]) {
+int Parser::bytesToSignedInt(const char bytes[4]) {
   int result = bytes[0];
   for (auto i = 1; i < 4; i++) {
     result <<= 8;
@@ -185,77 +262,6 @@ void Parser::parseBitmapArray() {
   }
   m_picture->setBitmapArray(red, green, blue);
 }
-
-// BMP
-
-void BMP::setMagic(const char magic[2]) {
-  m_magic[0] = magic[0];
-  m_magic[1] = magic[1];
-}
-
-void BMP::setBmpFileSize(const uint32_t &bmpFileSize) {
-  m_bmpFileSize = bmpFileSize;
-}
-
-void BMP::setPixelArrayAddress(const uint32_t &pixelArrayAddress) {
-  m_pixelArrayAddress = pixelArrayAddress;
-}
-
-void BMP::setHeaderSize(const uint32_t &headerSize) {
-  m_headerSize = headerSize;
-}
-
-void BMP::setBitMapWidth(const int &bitmapWidth) {
-  m_bitmapWidth = bitmapWidth;
-}
-
-void BMP::setBitMapHeight(const int &bitmapHeight) {
-  m_bitmapHeight = bitmapHeight;
-}
-
-void BMP::setConstant(const char constant[2]) {
-  m_constant[0] = constant[0];
-  m_constant[1] = constant[1];
-}
-
-void BMP::setBitsPerPixel(const char bitsPerPixel[2]) {
-  m_bitsPerPixel[0] = bitsPerPixel[0];
-  m_bitsPerPixel[1] = bitsPerPixel[1];
-}
-
-void BMP::setCompression(const uint32_t &compression) {
-  m_compression = compression;
-}
-
-void BMP::setBitmapSizeWithoutCompression(
-    const uint32_t &bitmapSizeWithoutCompression) {
-  m_bitmapSizeWithoutCompression = bitmapSizeWithoutCompression;
-}
-
-void BMP::setNumOfColors(const uint32_t &numOfColors) {
-  m_numOfColors = numOfColors;
-}
-
-void BMP::setColors(const std::map<char, Color> &colors) { m_colors = colors; }
-
-void BMP::setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
-                         const matrix::Mat &blue) {
-  m_red = red;
-  m_green = green;
-  m_blue = blue;
-}
-
-const int BMP::getBitsPerPixel() { return (int)m_bitsPerPixel[1]; }
-
-const uint32_t BMP::getNumOfColors() { return m_numOfColors; }
-
-const uint32_t BMP::getPixelArrayAddress() { return m_pixelArrayAddress; }
-
-const uint32_t BMP::getBitMapWidth() { return m_bitmapWidth; }
-
-const uint32_t BMP::getBitMapHeight() { return m_bitmapHeight; }
-
-const std::map<char, Color> &BMP::getColors() { return m_colors; }
 
 // Color
 
