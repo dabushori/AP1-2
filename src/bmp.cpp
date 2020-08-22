@@ -1,4 +1,4 @@
-#include "bmp_parser.h"
+#include "bmp.h"
 
 namespace bmp {
 Parser::Parser(const std::string &filename) {
