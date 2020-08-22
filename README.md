@@ -58,7 +58,7 @@
 * Has three members (chars): m_red, m_green, m_blue.
 * Has a constructor.
 * Has getters to the members.
-
+* * *
 ## Tests
 * Tested the Matrix part with tests that we made.
 * Tested the code with tests that we got from our fellow students.
