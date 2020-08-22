@@ -24,10 +24,10 @@ private:
   uint32_t m_headerSize; // supposed to be 40
   int m_bitmapWidth;
   int m_bitmapHeight;
-  char m_constant[2];                      // must be 1
-  char m_bitsPerPixel[2];                  // supposed to be 8 or 24
-  uint32_t m_compression;                  // supposed to be 0
-  uint32_t m_bitmapSizeWithoutCompression; // supposed to be 0
+  char m_constant[2];     // must be 1
+  char m_bitsPerPixel[2]; // supposed to be 8 or 24
+  uint32_t m_compression; // supposed to be 0
+  uint32_t m_bitmapSizeWithoutCompression;
   uint32_t m_numOfColors;
   // color pallete members
   std::map<char, Color> m_colors;
@@ -211,27 +211,121 @@ class Parser {
 private:
   std::unique_ptr<BMP> m_picture;
   std::vector<char> m_data;
+
   // bytes to int
+
+  /**
+   * @brief turn 4 chars that represent an unsigned integer to unsigned integer
+   *
+   * @param bytes the array of the chars
+   * @return uint32_t the represented unsigned int
+   */
   uint32_t bytesToUnsignedInt(const char bytes[4]);
+
+  /**
+   * @brief turn 4 chars that represent an signed integer to signed integer
+   *
+   * @param bytes the array of the chars
+   * @return int the represented signed int
+   */
   int bytesToSignedInt(const char bytes[4]);
+
   // header
+
+  /**
+   * @brief parse the header part of the BMP file
+   *
+   */
   void parseHeader();
+
+  /**
+   * @brief parse the magic part in the header
+   *
+   */
   void parseMagic();
+
+  /**
+   * @brief parse the BMP file size part in the header
+   *
+   */
   void parseBmpFileSize();
+
+  /**
+   * @brief parse the pixel array address part in the header
+   *
+   */
   void parsePixelArrayAddress();
+
   // DIB header
+
+  /**
+   * @brief parse the DIB header part of the BMP file
+   *
+   */
   void parseDIBHeader();
+
+  /**
+   * @brief parse the header size part in the DIB header
+   *
+   */
   void parseHeaderSize();
+
+  /**
+   * @brief parse the bitmap width part in the DIB header
+   *
+   */
   void parseBitmapWidth();
+
+  /**
+   * @brief parse the bitmap height part in the DIB header
+   *
+   */
   void parseBitmapHeight();
+
+  /**
+   * @brief parse the bitmap width part in the DIB header
+   *
+   */
   void parseConstant();
+
+  /**
+   * @brief parse the bits per pixel part in the DIB header
+   *
+   */
   void parseBitsPerPixel();
+
+  /**
+   * @brief parse the compression part in the DIB header
+   *
+   */
   void parseCompression();
+
+  /**
+   * @brief parse the bitmap size without compression part in the DIB header
+   *
+   */
   void parseBitmapSizeWithoutCompression();
+
+  /**
+   * @brief parse the num of colors part in the DIB header
+   *
+   */
   void parseNumOfColors();
+
   // color pallete
+
+  /**
+   * @brief parse the color pallete part of the BMP file
+   *
+   */
   void parseColorPallete();
+
   // bitmap array
+
+  /**
+   * @brief parse the bitmap array part of the BMP file
+   *
+   */
   void parseBitmapArray();
 
 public:
