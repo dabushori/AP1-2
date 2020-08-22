@@ -29,6 +29,5 @@
 * Tested the BMP with the "woman" that you gave us.
 * Tested the BMP with a couple more photos that we created.
 * * *
-# "c++ is the best because it warms our heart and not our computers" - The God Of Computers
-
- 
+# "c++ is the best because it warms our heart and not our computers" - The God Of Programming - 2016
+* Inspiration - https://www.youtube.com/watch?v=dQw4w9WgXcQ
