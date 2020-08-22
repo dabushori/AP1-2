@@ -24,10 +24,10 @@ private:
   uint32_t m_headerSize; // supposed to be 40
   int m_bitmapWidth;
   int m_bitmapHeight;
-  char m_constant[2];                      // must be 1
-  char m_bitsPerPixel[2];                  // supposed to be 8 or 24
-  uint32_t m_compression;                  // supposed to be 0
-  uint32_t m_bitmapSizeWithoutCompression; // supposed to be 0
+  char m_constant[2];     // must be 1
+  char m_bitsPerPixel[2]; // supposed to be 8 or 24
+  uint32_t m_compression; // supposed to be 0
+  uint32_t m_bitmapSizeWithoutCompression;
   uint32_t m_numOfColors;
   // color pallete members
   std::map<char, Color> m_colors;

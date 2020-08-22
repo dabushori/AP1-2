@@ -231,14 +231,16 @@ void Parser::parseColorPallete() {
 }
 
 void Parser::parseBitmapArray() {
-  matrix::Mat red(m_picture->getBitMapHeight(), m_picture->getBitMapWidth());
-  matrix::Mat green(m_picture->getBitMapHeight(), m_picture->getBitMapWidth());
-  matrix::Mat blue(m_picture->getBitMapHeight(), m_picture->getBitMapWidth());
+  uint32_t height = m_picture->getBitMapHeight(),
+           width = m_picture->getBitMapWidth();
+  matrix::Mat red(height, width);
+  matrix::Mat green(height, width);
+  matrix::Mat blue(height, width);
   uint32_t index = m_picture->getPixelArrayAddress();
   if (m_picture->getBitsPerPixel() == 24) {
-    uint32_t padding = m_picture->getBitMapWidth() % 4;
-    for (int i = 0; i < m_picture->getBitMapHeight(); ++i) {
-      for (int j = 0; j < m_picture->getBitMapWidth(); ++j) {
+    uint32_t padding = width % 4;
+    for (int i = 0; i < height; ++i) {
+      for (int j = 0; j < width; ++j) {
         red(i, j) = m_data[index];
         green(i, j) = m_data[index + 1];
         blue(i, j) = m_data[index + 2];
@@ -247,9 +249,9 @@ void Parser::parseBitmapArray() {
       index += padding;
     }
   } else {
-    uint32_t padding = 4 - m_picture->getBitMapWidth() % 4;
-    for (int i = 0; i < m_picture->getBitMapHeight(); ++i) {
-      for (int j = 0; j < m_picture->getBitMapWidth(); ++j) {
+    uint32_t padding = 4 - width % 4;
+    for (int i = 0; i < height; ++i) {
+      for (int j = 0; j < width; ++j) {
         char colorNum = m_data[index];
         auto colors = m_picture->getColors();
         red(i, j) = colors[colorNum].getRed();
