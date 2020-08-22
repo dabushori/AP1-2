@@ -1,8 +1,11 @@
 #pragma once
 
+#include "Mat.h"
+
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -25,9 +28,11 @@ private:
   uint32_t m_bitmapSizeWithoutCompression; // supposed to be 0
   uint32_t m_numOfColors;
   // color pallete members
-  std::vector<int> m_colors;
+  std::map<char, Color> m_colors;
   // bitmap array
-  int getPixel(uint32_t i, uint32_t j);
+  matrix::Mat m_red;
+  matrix::Mat m_green;
+  matrix::Mat m_blue;
 
 public:
   /**
@@ -55,21 +60,149 @@ public:
                             const std::string &outputPath);
 
   // header setters
-  void setMagic(const char magic[2]); // supposed to be 'BM'
+
+  /**
+   * @brief Set the Magic member
+   *
+   * @param magic the new magic
+   */
+  void setMagic(const char magic[2]);
+
+  /**
+   * @brief Set the Bmp File Size member
+   *
+   * @param bmpFileSize the new bmpFileSize
+   */
   void setBmpFileSize(const uint32_t &bmpFileSize);
+
+  /**
+   * @brief Set the Pixel Array Address member
+   *
+   * @param pixelArrayAddress the new pixelArrayAddress
+   */
   void setPixelArrayAddress(const uint32_t &pixelArrayAddress);
+
   // DIB header setters
-  void setHeaderSize(const uint32_t &headerSize); // supposed to be 40
+
+  /**
+   * @brief Set the Header Size member
+   *
+   * @param headerSize the new headerSize
+   */
+  void setHeaderSize(const uint32_t &headerSize);
+
+  /**
+   * @brief Set the Bit Map Width member
+   *
+   * @param bitmapWidth the new bitmapWidth
+   */
   void setBitMapWidth(const int &bitmapWidth);
+
+  /**
+   * @brief Set the Bit Map Height member
+   *
+   * @param bitmapHeight the new bitmapHeight
+   */
   void setBitMapHeight(const int &bitmapHeight);
-  void setConstant(const char constant[2]);         // must be 1
-  void setBitPerPixel(const char bitsPerPixel[2]);  // supposed to be 8 or 24
-  void setCompression(const uint32_t &compression); // supposed to be 0
-  void setBitmapSizeWithoutCompression(
-      const uint32_t &bitmapSizeWithoutCompression); // supposed to be 0
+
+  /**
+   * @brief Set the Constant member
+   *
+   * @param constant the new constant
+   */
+  void setConstant(const char constant[2]);
+
+  /**
+   * @brief Set the Bits Per Pixel member
+   *
+   * @param bitsPerPixel the new bitsPerPixel
+   */
+  void setBitsPerPixel(const char bitsPerPixel[2]);
+
+  /**
+   * @brief Set the Compression member
+   *
+   * @param compression the new compression
+   */
+  void setCompression(const uint32_t &compression);
+
+  /**
+   * @brief Set the Bitmap Size Without Compression member
+   *
+   * @param bitmapSizeWithoutCompression the new bitmapSizeWithoutCompression
+   */
+  void
+  setBitmapSizeWithoutCompression(const uint32_t &bitmapSizeWithoutCompression);
+
+  /**
+   * @brief Set the Num Of Colors member
+   *
+   * @param numOfColors the new numOfColors
+   */
   void setNumOfColors(const uint32_t &numOfColors);
+
   // color pallete setters
-  void setColors(const std::vector<int> &colors);
+
+  /**
+   * @brief Set the Colors member
+   *
+   * @param colors the new colors
+   */
+  void setColors(const std::map<char, Color> &colors);
+
+  // bitmap array setters
+
+  /**
+   * @brief Set the Bitmap Array member
+   *
+   * @param red the new red
+   * @param green the new green
+   * @param blue the new blue
+   */
+  void setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
+                      const matrix::Mat &blue);
+
+  /**
+   * @brief Get the Bits Per Pixel member
+   *
+   * @return const int the Bits Per Pixel member
+   */
+  const int getBitsPerPixel();
+
+  /**
+   * @brief Get the Num Of Colors member
+   *
+   * @return const uint32_t the Num Of Colors member
+   */
+  const uint32_t getNumOfColors();
+
+  /**
+   * @brief Get the Pixel Array Address member
+   *
+   * @return const uint32_t the Pixel Array Address member
+   */
+  const uint32_t getPixelArrayAddress();
+
+  /**
+   * @brief Get the Bit Map Width member
+   *
+   * @return const uint32_t the Bit Map Width member
+   */
+  const uint32_t getBitMapWidth();
+
+  /**
+   * @brief Get the Bit Map Height member
+   *
+   * @return const uint32_t the Bit Map Height member
+   */
+  const uint32_t getBitMapHeight();
+
+  /**
+   * @brief Get the Colors member
+   *
+   * @return const std::map<char, Color>& the Colors member
+   */
+  const std::map<char, Color> &getColors();
 };
 
 class Parser {
@@ -80,9 +213,59 @@ private:
   void parseDIBHeader();
   void parseColorPallete();
   void parseBitmapArray();
+  double parsePixel(uint32_t i, uint32_t j);
 
 public:
+  /**
+   * @brief Construct a new Parser object
+   *
+   * @param filename the name of the file to be parsed
+   */
   Parser(const std::string &filename);
+
+  /**
+   * @brief Get the picture that was parsed
+   *
+   * @return BMP& the picture that was parsed
+   */
   BMP &getPicture();
+};
+
+class Color {
+private:
+  char m_red;
+  char m_green;
+  char m_blue;
+
+public:
+  /**
+   * @brief Construct a new Color object
+   *
+   * @param red the red value of this color
+   * @param green the green value of this color
+   * @param blue the blue value of this color
+   */
+  Color(char red, char green, char blue);
+
+  /**
+   * @brief Get the Red value
+   *
+   * @return double the Red value
+   */
+  double getRed();
+
+  /**
+   * @brief Get the Green value
+   *
+   * @return double the Green value
+   */
+  double getGreen();
+
+  /**
+   * @brief Get the Blue value
+   *
+   * @return double the Blue value
+   */
+  double getBlue();
 };
 } // namespace bmp
