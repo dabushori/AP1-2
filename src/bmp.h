@@ -11,8 +11,23 @@
 namespace bmp {
 class BMP {
 private:
-  char magic[2];
-  uint32_t bmpFileSize;
+  // header members
+  char m_magic[2]; // supposed to be 'BM'
+  uint32_t m_bmpFileSize;
+  uint32_t m_pixelArrayAddress;
+  // DIB header members
+  uint32_t m_headerSize; // supposed to be 40
+  int m_bitmapWidth;
+  int m_bitmapHeight;
+  char m_constant[2];                      // must be 1
+  char m_bitsPerPixel[2];                  // supposed to be 8 or 24
+  uint32_t m_compression;                  // supposed to be 0
+  uint32_t m_bitmapSizeWithoutCompression; // supposed to be 0
+  uint32_t m_numOfColors;
+  // color pallete members
+  std::vector<int> m_colors;
+  // bitmap array
+  int getPixel(uint32_t i, uint32_t j);
 
 public:
   BMP() {}
