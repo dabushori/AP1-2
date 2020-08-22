@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Mat.h"
+#include "exceptions.h"
 
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -209,11 +211,28 @@ class Parser {
 private:
   std::unique_ptr<BMP> m_picture;
   std::vector<char> m_data;
+  // bytes to int
+  uint32_t bytesToUnsignedInt(const char bytes[4]);
+  int bytesToSignedInt(const char bytes[4]);
+  // header
   void parseHeader();
+  void parseMagic();
+  void parseBmpFileSize();
+  void parsePixelArrayAddress();
+  // DIB header
   void parseDIBHeader();
+  void parseHeaderSize();
+  void parseBitmapWidth();
+  void parseBitmapHeight();
+  void parseConstant();
+  void parseBitsPerPixel();
+  void parseCompression();
+  void parseBitmapSizeWithoutCompression();
+  void parseNumOfColors();
+  // color pallete
   void parseColorPallete();
+  // bitmap array
   void parseBitmapArray();
-  double parsePixel(uint32_t i, uint32_t j);
 
 public:
   /**
