@@ -5,6 +5,7 @@
 ### In this assignment we created:
 * Mat.cpp + Mat.h - a matrix class in cpp.
 * exceptions.cpp + exceptions.h - throwing exceptions.
+* bmp.cpp + bmp.h - parsing BMP pictures
 * * *
 ## Mat (Matrix) class is doing the following functions:
 * Constructor
@@ -21,7 +22,17 @@
 * Operator (rowIndex, colIndex) - get the value in the matrix
 * * *
 ## ErrorCodesException class:
-* Exception that is dealing with the ErrorCode struct.
+* Exception that is dealing with the ErrorCode errors in the Matrix section.
+* * *
+## BMPException class:
+* Exception that is dealing with message errors in the BMP section.
+* * *
+## BMP class is doing the following functions:
+* rotating the BMP picture 90 degrees.
+* converting the BMP picture to gray scale one.
+* setters to all the members in the class.
+* * *
+## Parser class is doing the following functions:
 * * *
 ## Tests
 * Tested the Matrix part with tests that we made.
@@ -30,4 +41,4 @@
 * Tested the BMP with a couple more photos that we created.
 * * *
 # "c++ is the best because it warms our heart and not our computers" - The God Of Programming - 2016
-* Inspiration - https://www.youtube.com/watch?v=dQw4w9WgXcQ
+## Inspiration - https://www.youtube.com/watch?v=dQw4w9WgXcQ
