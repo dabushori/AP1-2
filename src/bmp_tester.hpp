@@ -2,6 +2,8 @@
 
 namespace testing {
 namespace bmp {
+bool isValidPath(const std::string &path);
+
 /**
  * @brief Receives a path to a BMP image on the disk and rotates it 90 degrees
  * clockwise, writing the resulting image to the disk.

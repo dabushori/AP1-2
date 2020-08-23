@@ -51,7 +51,21 @@ BMP BMP::convertToGrayScale() {
   return converted;
 }
 
-void BMP::writeToFile(const std::string &outputFile) {}
+void BMP::writeToFile(const std::string &outputFile) {
+  std::ofstream out(outputFile);
+  if (!out) {
+    throw exceptions::BMPException(
+        "error occured - couldn't open the output file");
+  }
+
+  // writing
+
+  if (!out) {
+    throw exceptions::BMPException(
+        "error occured after finished writing to the file");
+  }
+  out.close();
+}
 
 // BMP
 
@@ -171,6 +185,8 @@ Parser::Parser(const std::string &filename) {
   parseDIBHeader();
   parseColorPallete();
   parseBitmapArray();
+
+  in.close();
 }
 
 BMP &Parser::getPicture() { return *m_picture; }
