@@ -1,11 +1,12 @@
 #include "bmp.h"
 
 namespace bmp_parser {
-double BMP::toGray(const double red, const double green, const double blue) {
+double BMP::toGray(const double red, const double green,
+                   const double blue) const {
   return std::round(0.2126 * red + 0.7152 * green + 0.0722 * blue);
 }
 
-BMP BMP::rotateImage() {
+BMP BMP::rotateImage() const {
   BMP converted(*this);
   if (converted.getBitsPerPixel() == 8) {
     converted.setBitmapArray(m_pixels.rotate90Degrees());
@@ -16,7 +17,7 @@ BMP BMP::rotateImage() {
   return converted;
 }
 
-BMP BMP::convertToGrayScale() {
+BMP BMP::convertToGrayScale() const {
   BMP converted(*this);
   if (converted.getBitsPerPixel() == 8) {
 
@@ -60,7 +61,7 @@ BMP BMP::convertToGrayScale() {
   return converted;
 }
 
-void BMP::writeToFile(const std::string &outputFile) {
+void BMP::writeToFile(const std::string &outputFile) const {
   std::ofstream out(outputFile);
   if (!out) {
     throw exceptions::BMPException(
@@ -160,17 +161,17 @@ void BMP::setBitmapArray(const matrix::Mat &pixels) {
   m_blue = matrix::Mat();
 }
 
-int BMP::getBitsPerPixel() { return (int)m_bitsPerPixel[1]; }
+int BMP::getBitsPerPixel() const { return (int)m_bitsPerPixel[1]; }
 
-uint32_t BMP::getNumOfColors() { return m_numOfColors; }
+uint32_t BMP::getNumOfColors() const { return m_numOfColors; }
 
-uint32_t BMP::getPixelArrayAddress() { return m_pixelArrayAddress; }
+uint32_t BMP::getPixelArrayAddress() const { return m_pixelArrayAddress; }
 
-uint32_t BMP::getBitMapWidth() { return m_bitmapWidth; }
+uint32_t BMP::getBitMapWidth() const { return m_bitmapWidth; }
 
-uint32_t BMP::getBitMapHeight() { return m_bitmapHeight; }
+uint32_t BMP::getBitMapHeight() const { return m_bitmapHeight; }
 
-const std::map<char, Color> &BMP::getColors() { return m_colors; }
+const std::map<char, Color> &BMP::getColors() const { return m_colors; }
 
 // Parser
 
@@ -198,7 +199,7 @@ Parser::Parser(const std::string &filename) {
   in.close();
 }
 
-BMP &Parser::getPicture() { return *m_picture; }
+BMP &Parser::getPicture() const { return *m_picture; }
 
 void Parser::parseHeader() {
   parseMagic();
@@ -326,7 +327,7 @@ void Parser::parseNumOfImportantColors() {
   m_picture->setNumOfImportantColors(numOfImportantColorsArray);
 }
 
-uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) {
+uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) const {
   uint32_t result = bytes[0];
   for (auto i = 1; i < 4; i++) {
     result <<= 8;
@@ -335,7 +336,7 @@ uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) {
   return result;
 }
 
-int Parser::bytesToSignedInt(const char bytes[4]) {
+int Parser::bytesToSignedInt(const char bytes[4]) const {
   int result = bytes[0];
   for (auto i = 1; i < 4; i++) {
     result <<= 8;
@@ -408,18 +409,18 @@ Color::Color(char red, char green, char blue) {
   m_blue = blue;
 }
 
-double Color::getRed() { return m_red; }
+double Color::getRed() const { return m_red; }
 
-double Color::getGreen() { return m_green; }
+double Color::getGreen() const { return m_green; }
 
-double Color::getBlue() { return m_blue; }
+double Color::getBlue() const { return m_blue; }
 
-Color Color::toGray() {
+Color Color::toGray() const {
   char val = std::round(0.2126 * m_red + 0.7152 * m_green + 0.0722 * m_blue);
   return Color(val, val, val);
 }
 
-bool Color::isEqual(const Color &other) {
+bool Color::isEqual(const Color &other) const {
   return m_red == other.m_red && m_green == other.m_green &&
          m_blue == other.m_blue;
 }

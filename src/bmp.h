@@ -54,7 +54,7 @@ private:
    * @return double the value of the gray color that we get (the red, green and
    * blue values)
    */
-  double toGray(const double red, const double green, const double blue);
+  double toGray(const double red, const double green, const double blue) const;
 
 public:
   /**
@@ -62,21 +62,21 @@ public:
    *
    * @return BMP the new rotated image
    */
-  BMP rotateImage();
+  BMP rotateImage() const;
 
   /**
    * @brief convert the current image into gray scale colored
    *
    * @return BMP the new gray scale colored image
    */
-  BMP convertToGrayScale();
+  BMP convertToGrayScale() const;
 
   /**
    * @brief write the current image to the given file
    *
    * @param outputFile the given file
    */
-  void writeToFile(const std::string &outputFile);
+  void writeToFile(const std::string &outputFile) const;
 
   // header setters
 
@@ -212,44 +212,44 @@ public:
   /**
    * @brief Get the Bits Per Pixel member
    *
-   * @return const int the Bits Per Pixel member
+   * @return int the Bits Per Pixel member
    */
-  int getBitsPerPixel();
+  int getBitsPerPixel() const;
 
   /**
    * @brief Get the Num Of Colors member
    *
-   * @return const uint32_t the Num Of Colors member
+   * @return uint32_t the Num Of Colors member
    */
-  uint32_t getNumOfColors();
+  uint32_t getNumOfColors() const;
 
   /**
    * @brief Get the Pixel Array Address member
    *
-   * @return const uint32_t the Pixel Array Address member
+   * @return uint32_t the Pixel Array Address member
    */
-  uint32_t getPixelArrayAddress();
+  uint32_t getPixelArrayAddress() const;
 
   /**
    * @brief Get the Bit Map Width member
    *
-   * @return const uint32_t the Bit Map Width member
+   * @return uint32_t the Bit Map Width member
    */
-  uint32_t getBitMapWidth();
+  uint32_t getBitMapWidth() const;
 
   /**
    * @brief Get the Bit Map Height member
    *
-   * @return const uint32_t the Bit Map Height member
+   * @return uint32_t the Bit Map Height member
    */
-  uint32_t getBitMapHeight();
+  uint32_t getBitMapHeight() const;
 
   /**
    * @brief Get the Colors member
    *
    * @return const std::map<char, Color>& the Colors member
    */
-  const std::map<char, Color> &getColors();
+  const std::map<char, Color> &getColors() const;
 };
 
 class Parser {
@@ -265,7 +265,7 @@ private:
    * @param bytes the array of the chars
    * @return uint32_t the represented unsigned int
    */
-  uint32_t bytesToUnsignedInt(const char bytes[4]);
+  uint32_t bytesToUnsignedInt(const char bytes[4]) const;
 
   /**
    * @brief turn 4 chars that represent an signed integer to signed integer
@@ -273,7 +273,7 @@ private:
    * @param bytes the array of the chars
    * @return int the represented signed int
    */
-  int bytesToSignedInt(const char bytes[4]);
+  int bytesToSignedInt(const char bytes[4]) const;
 
   // header
 
@@ -404,7 +404,7 @@ public:
    *
    * @return BMP& the picture that was parsed
    */
-  BMP &getPicture();
+  BMP &getPicture() const;
 };
 
 class Color {
@@ -434,28 +434,28 @@ public:
    *
    * @return double the Red value
    */
-  double getRed();
+  double getRed() const;
 
   /**
    * @brief Get the Green value
    *
    * @return double the Green value
    */
-  double getGreen();
+  double getGreen() const;
 
   /**
    * @brief Get the Blue value
    *
    * @return double the Blue value
    */
-  double getBlue();
+  double getBlue() const;
 
   /**
    * @brief convert the current color into a gray scale color
    *
    * @return Color the new gray scale colored
    */
-  Color toGray();
+  Color toGray() const;
 
   /**
    * @brief check if the cureent color is equal to the given color
@@ -464,6 +464,6 @@ public:
    * @return true if they are equal
    * @return false otherwise
    */
-  bool isEqual(const Color &other);
+  bool isEqual(const Color &other) const;
 };
 } // namespace bmp_parser
