@@ -113,4 +113,20 @@ double Mat::operator()(const uint32_t rowIndex, const uint32_t colIndex) const {
   }
   return result;
 }
+
+Mat Mat::rotate90Degrees() const {
+  uint32_t height = getHeight();
+  uint32_t width = getWidth();
+  Mat result(width, height);
+  for (uint32_t i = 0; i < height / 2; ++i) {
+    for (uint32_t j = i; j < width - i; ++j) {
+      double temp = (*this)(i, j);
+      result.setValue(i, j, (*this)(height - 1 - j, i));
+      result.setValue(width - 1 - j, i, (*this)(height - 1 - i, width - 1 - j));
+      result.setValue(width - 1 - i, height - 1 - j, (*this)(j, width - 1 - i));
+      result.setValue(j, height - 1 - i, temp);
+    }
+  }
+  return result;
+}
 } // namespace matrix

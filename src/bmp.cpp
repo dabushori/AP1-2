@@ -5,7 +5,16 @@ double BMP::toGray(const double red, const double green, const double blue) {
   return std::round(0.2126 * red + 0.7152 * green + 0.0722 * blue);
 }
 
-BMP BMP::rotateImage() {}
+BMP BMP::rotateImage() {
+  BMP converted(*this);
+  if (converted.getBitsPerPixel() == 8) {
+    converted.setBitmapArray(m_pixels.rotate90Degrees());
+  } else {
+    converted.setBitmapArray(m_red.rotate90Degrees(), m_green.rotate90Degrees(),
+                             m_blue.rotate90Degrees());
+  }
+  return converted;
+}
 
 BMP BMP::convertToGrayScale() {
   BMP converted(*this);

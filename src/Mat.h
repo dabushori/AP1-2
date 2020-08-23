@@ -119,5 +119,13 @@ public:
    * @return double the value that is in the cell
    */
   double operator()(const uint32_t rowIndex, const uint32_t colIndex) const;
+
+  /**
+   * @brief rotate the matrix 90 degrees clockwise.
+   *
+   * @param matrix the matrix we want to rotate
+   * @return Mat the rotated matrix
+   */
+  Mat rotate90Degrees() const;
 };
 } // namespace matrix
