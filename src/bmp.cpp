@@ -73,19 +73,23 @@ void BMP::writeToFile(const std::string &outputFile) const {
   for (uint32_t i = 0; i < 4; ++i) {
     out << m_reserved[i];
   }
-
   out << m_pixelArrayAddress;
-  out << m_headerSize;
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_headerSize[i];
+  }
   out << m_bitmapWidth;
   out << m_bitmapHeight;
   out << m_constant[0] << m_constant[1];
   out << m_bitsPerPixel[0] << m_bitsPerPixel[1];
   out << m_compression;
-  out << m_bitmapSizeWithoutCompression;
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_bitmapSizeWithoutCompression[i];
+  }
   for (uint32_t i = 0; i < 8; ++i) {
     out << m_resolution[i];
   }
   out << m_numOfColors;
+
   for (uint32_t i = 0; i < 4; ++i) {
     out << m_numberOfImportantColors[i];
   }
@@ -101,8 +105,6 @@ void BMP::writeToFile(const std::string &outputFile) const {
       }
     }
   } else {
-
-    ////////////////////////////////////////////////////////////////////////
 
     for (uint32_t i = 0; i < m_red.getHeight(); ++i) {
       for (uint32_t j = 0; j < m_red.getWidth(); ++j) {
@@ -139,8 +141,10 @@ void BMP::setPixelArrayAddress(const uint32_t &pixelArrayAddress) {
   m_pixelArrayAddress = pixelArrayAddress;
 }
 
-void BMP::setHeaderSize(const uint32_t &headerSize) {
-  m_headerSize = headerSize;
+void BMP::setHeaderSize(const char headerSize[4]) {
+  for (int i = 0; i < 4; ++i) {
+    m_headerSize[i] = headerSize[i];
+  }
 }
 
 void BMP::setBitMapWidth(const int &bitmapWidth) {
@@ -174,8 +178,10 @@ void BMP::setCompression(const uint32_t &compression) {
 }
 
 void BMP::setBitmapSizeWithoutCompression(
-    const uint32_t &bitmapSizeWithoutCompression) {
-  m_bitmapSizeWithoutCompression = bitmapSizeWithoutCompression;
+    const char bitmapSizeWithoutCompression[4]) {
+  for (int i = 0; i < 4; ++i) {
+    m_bitmapSizeWithoutCompression[i] = bitmapSizeWithoutCompression[i];
+  }
 }
 
 void BMP::setResolution(const char resolution[8]) {
@@ -225,8 +231,9 @@ std::map<char, Color> &BMP::getColors() { return m_colors; }
 
 // Parser
 
-Parser::Parser(const std::string &filename) : m_picture() {
-  // m_picture = std::make_unique<BMP>();
+Parser::Parser(const std::string &filename) {
+
+  m_picture = {};
 
   std::ifstream in(filename, std::ios::binary);
   if (!in) {
@@ -235,11 +242,6 @@ Parser::Parser(const std::string &filename) : m_picture() {
 
   m_data = std::vector<char>{std::istreambuf_iterator<char>{in},
                              std::istreambuf_iterator<char>{}};
-
-  // if (!in.eof()) {
-  //   throw exceptions::BMPException(
-  //       "error occured - didn't reach the end of the file");
-  // }
 
   parseHeader();
   parseDIBHeader();
@@ -279,8 +281,8 @@ void Parser::parseReserved() {
 void Parser::parsePixelArrayAddress() {
   const char pixelArrayAddress[4] = {m_data[10], m_data[11], m_data[12],
                                      m_data[13]};
-  m_picture.setPixelArrayAddress(bytesToUnsignedInt(pixelArrayAddress));
-}
+  m_picture.setPixelArrayAddress(bytesToSignedInt(pixelArrayAddress));
+} // namespace bmp_parser
 
 void Parser::parseDIBHeader() {
   parseHeaderSize();
@@ -298,12 +300,12 @@ void Parser::parseDIBHeader() {
 void Parser::parseHeaderSize() {
   const char headerSizeArray[4] = {m_data[14], m_data[15], m_data[16],
                                    m_data[17]};
-  uint32_t headerSize = bytesToUnsignedInt(headerSizeArray);
-  if (headerSize != 40) {
+  if (headerSizeArray[0] != 40 || headerSizeArray[1] != 0 ||
+      headerSizeArray[2] != 0 || headerSizeArray[3] != 0) {
     throw exceptions::BMPException(
         "Error in size of header(not 40) - in DIBHeader");
   }
-  m_picture.setHeaderSize(headerSize);
+  m_picture.setHeaderSize(headerSizeArray);
 }
 
 void Parser::parseBitmapWidth() {
@@ -350,9 +352,7 @@ void Parser::parseCompression() {
 void Parser::parseBitmapSizeWithoutCompression() {
   const char bitmapSizeWithoutCompressionArray[4] = {m_data[34], m_data[35],
                                                      m_data[36], m_data[37]};
-  uint32_t bitmapSizeWithoutCompression =
-      bytesToUnsignedInt(bitmapSizeWithoutCompressionArray);
-  m_picture.setBitmapSizeWithoutCompression(bitmapSizeWithoutCompression);
+  m_picture.setBitmapSizeWithoutCompression(bitmapSizeWithoutCompressionArray);
 }
 
 void Parser::parseResolution() {
@@ -380,8 +380,8 @@ void Parser::parseNumOfImportantColors() {
 }
 
 uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) const {
-  uint32_t result = bytes[3];
-  for (auto i = 2; i >= 0; --i) {
+  uint32_t result = bytes[0];
+  for (auto i = 1; i < 4; ++i) {
     result <<= 8;
     result += bytes[i];
   }
@@ -412,9 +412,9 @@ void Parser::parseColorPallete() {
 }
 
 void Parser::parseBitmapArray() {
-
   uint32_t height = m_picture.getBitMapHeight(),
            width = m_picture.getBitMapWidth();
+
   uint32_t index = m_picture.getPixelArrayAddress();
   if (m_picture.getBitsPerPixel() == 24) {
     matrix::Mat red(height, width);

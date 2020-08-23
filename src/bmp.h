@@ -25,13 +25,13 @@ private:
   char m_reserved[4];
   uint32_t m_pixelArrayAddress;
   // DIB header members
-  uint32_t m_headerSize; // supposed to be 40
+  char m_headerSize[4]; // supposed to be 40
   int m_bitmapWidth;
   int m_bitmapHeight;
   char m_constant[2];     // must be 1
   char m_bitsPerPixel[2]; // supposed to be 8 or 24
   uint32_t m_compression; // supposed to be 0
-  uint32_t m_bitmapSizeWithoutCompression;
+  char m_bitmapSizeWithoutCompression[4];
   // addresses 38-43**********
   char m_resolution[8];
   uint32_t m_numOfColors;
@@ -115,7 +115,7 @@ public:
    *
    * @param headerSize the new headerSize
    */
-  void setHeaderSize(const uint32_t &headerSize);
+  void setHeaderSize(const char headerSize[4]);
 
   /**
    * @brief Set the Bit Map Width member
@@ -160,7 +160,7 @@ public:
    * @param bitmapSizeWithoutCompression the new bitmapSizeWithoutCompression
    */
   void
-  setBitmapSizeWithoutCompression(const uint32_t &bitmapSizeWithoutCompression);
+  setBitmapSizeWithoutCompression(const char bitmapSizeWithoutCompression[4]);
 
   /**
    * @brief Set the Resolution member
