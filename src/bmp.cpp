@@ -67,29 +67,39 @@ void BMP::writeToFile(const std::string &outputFile) const {
     throw exceptions::BMPException(
         "error occured - couldn't open the output file");
   }
-
   out << m_magic[0] << m_magic[1];
-  out << m_bmpFileSize;
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_bmpFileSize[i];
+  }
   for (uint32_t i = 0; i < 4; ++i) {
     out << m_reserved[i];
   }
-  out << m_pixelArrayAddress;
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_pixelArrayAddress[i];
+  }
   for (uint32_t i = 0; i < 4; ++i) {
     out << m_headerSize[i];
   }
-  out << m_bitmapWidth;
-  out << m_bitmapHeight;
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_bitmapWidth[i];
+  }
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_bitmapHeight[i];
+  }
   out << m_constant[0] << m_constant[1];
   out << m_bitsPerPixel[0] << m_bitsPerPixel[1];
-  out << m_compression;
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_compression[i];
+  }
   for (uint32_t i = 0; i < 4; ++i) {
     out << m_bitmapSizeWithoutCompression[i];
   }
   for (uint32_t i = 0; i < 8; ++i) {
     out << m_resolution[i];
   }
-  out << m_numOfColors;
-
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_numOfColors[i];
+  }
   for (uint32_t i = 0; i < 4; ++i) {
     out << m_numberOfImportantColors[i];
   }
@@ -99,16 +109,16 @@ void BMP::writeToFile(const std::string &outputFile) const {
       out << it->second.getRed() << it->second.getGreen()
           << it->second.getBlue() << it->first;
     }
-    for (uint32_t i = 0; i < m_pixels.getHeight(); ++i) {
+    for (int i = m_pixels.getHeight() - 1; i >= 0; --i) {
       for (uint32_t j = 0; j < m_pixels.getWidth(); ++j) {
-        out << m_pixels(i, j);
+        out << (char)m_pixels(i, j);
       }
     }
   } else {
 
-    for (uint32_t i = 0; i < m_red.getHeight(); ++i) {
+    for (int i = m_red.getHeight() - 1; i >= 0; --i) {
       for (uint32_t j = 0; j < m_red.getWidth(); ++j) {
-        out << m_red(i, j) << m_green(i, j) << m_blue(i, j);
+        out << (char)m_red(i, j) << (char)m_green(i, j) << (char)m_blue(i, j);
       }
     }
   }
@@ -127,8 +137,10 @@ void BMP::setMagic(const char magic[2]) {
   m_magic[1] = magic[1];
 }
 
-void BMP::setBmpFileSize(const uint32_t &bmpFileSize) {
-  m_bmpFileSize = bmpFileSize;
+void BMP::setBmpFileSize(const char bmpFileSize[4]) {
+  for (uint32_t i = 0; i < 4; ++i) {
+    m_bmpFileSize[i] = bmpFileSize[i];
+  }
 }
 
 void BMP::setReserved(const char reserved[4]) {
@@ -137,8 +149,10 @@ void BMP::setReserved(const char reserved[4]) {
   }
 }
 
-void BMP::setPixelArrayAddress(const uint32_t &pixelArrayAddress) {
-  m_pixelArrayAddress = pixelArrayAddress;
+void BMP::setPixelArrayAddress(const char pixelArrayAddress[4]) {
+  for (uint32_t i = 0; i < 4; ++i) {
+    m_pixelArrayAddress[i] = pixelArrayAddress[i];
+  }
 }
 
 void BMP::setHeaderSize(const char headerSize[4]) {
@@ -147,12 +161,16 @@ void BMP::setHeaderSize(const char headerSize[4]) {
   }
 }
 
-void BMP::setBitMapWidth(const int &bitmapWidth) {
-  m_bitmapWidth = bitmapWidth;
+void BMP::setBitMapWidth(const char bitmapWidth[4]) {
+  for (int i = 0; i < 4; ++i) {
+    m_bitmapWidth[i] = bitmapWidth[i];
+  }
 }
 
-void BMP::setBitMapHeight(const int &bitmapHeight) {
-  m_bitmapHeight = bitmapHeight;
+void BMP::setBitMapHeight(const char bitmapHeight[4]) {
+  for (int i = 0; i < 4; ++i) {
+    m_bitmapHeight[i] = bitmapHeight[i];
+  }
 }
 
 void BMP::setConstant(const char constant[2]) {
@@ -173,8 +191,10 @@ void BMP::setBitsPerPixel(const int &bitsPerPixel) {
   m_bitsPerPixel[1] = 0;
 }
 
-void BMP::setCompression(const uint32_t &compression) {
-  m_compression = compression;
+void BMP::setCompression(const char compression[4]) {
+  for (int i = 0; i < 4; ++i) {
+    m_compression[i] = compression[i];
+  }
 }
 
 void BMP::setBitmapSizeWithoutCompression(
@@ -190,8 +210,20 @@ void BMP::setResolution(const char resolution[8]) {
   }
 }
 
-void BMP::setNumOfColors(const uint32_t &numOfColors) {
-  m_numOfColors = numOfColors;
+void BMP::setNumOfColors(const char numOfColors[4]) {
+  for (int i = 0; i < 4; ++i) {
+    m_numOfColors[i] = numOfColors[i];
+  }
+}
+
+void BMP::setNumOfColors(const size_t numOfColors) {
+  char numOfColorsArray[4];
+  int temp = numOfColors;
+  for (int i = 3; i >= 0; --i) {
+    numOfColorsArray[i] = (char)(temp & 255);
+    temp = temp >> 8;
+  }
+  setNumOfColors(numOfColorsArray);
 }
 
 void BMP::setNumOfImportantColors(const char numOfImportantColors[4]) {
@@ -219,13 +251,24 @@ void BMP::setBitmapArray(const matrix::Mat &pixels) {
 
 int BMP::getBitsPerPixel() const { return (int)m_bitsPerPixel[0]; }
 
-uint32_t BMP::getNumOfColors() const { return m_numOfColors; }
+uint32_t BMP::getNumOfColors() const {
+  for (int i = 0; i < 4; ++i) {
+    if (m_numOfColors[i] != 0) {
+      return bytesToUnsignedInt(m_numOfColors);
+    }
+  }
+  return std::pow(2, getBitsPerPixel());
+}
 
-uint32_t BMP::getPixelArrayAddress() const { return m_pixelArrayAddress; }
+uint32_t BMP::getPixelArrayAddress() const {
+  return bytesToSignedInt(m_pixelArrayAddress);
+}
 
-uint32_t BMP::getBitMapWidth() const { return m_bitmapWidth; }
+uint32_t BMP::getBitMapWidth() const { return bytesToSignedInt(m_bitmapWidth); }
 
-uint32_t BMP::getBitMapHeight() const { return m_bitmapHeight; }
+uint32_t BMP::getBitMapHeight() const {
+  return bytesToSignedInt(m_bitmapHeight);
+}
 
 std::map<char, Color> &BMP::getColors() { return m_colors; }
 
@@ -270,7 +313,7 @@ void Parser::parseMagic() {
 
 void Parser::parseBmpFileSize() {
   const char bmpFileSize[4] = {m_data[2], m_data[3], m_data[4], m_data[5]};
-  m_picture.setBmpFileSize(bytesToUnsignedInt(bmpFileSize));
+  m_picture.setBmpFileSize(bmpFileSize);
 }
 
 void Parser::parseReserved() {
@@ -281,7 +324,7 @@ void Parser::parseReserved() {
 void Parser::parsePixelArrayAddress() {
   const char pixelArrayAddress[4] = {m_data[10], m_data[11], m_data[12],
                                      m_data[13]};
-  m_picture.setPixelArrayAddress(bytesToSignedInt(pixelArrayAddress));
+  m_picture.setPixelArrayAddress(pixelArrayAddress);
 } // namespace bmp_parser
 
 void Parser::parseDIBHeader() {
@@ -310,12 +353,12 @@ void Parser::parseHeaderSize() {
 
 void Parser::parseBitmapWidth() {
   const char bitmapWidth[4] = {m_data[18], m_data[19], m_data[20], m_data[21]};
-  m_picture.setBitMapWidth(bytesToSignedInt(bitmapWidth));
+  m_picture.setBitMapWidth(bitmapWidth);
 }
 
 void Parser::parseBitmapHeight() {
   const char bitmapHeight[4] = {m_data[22], m_data[23], m_data[24], m_data[25]};
-  m_picture.setBitMapHeight(bytesToSignedInt(bitmapHeight));
+  m_picture.setBitMapHeight(bitmapHeight);
 }
 
 void Parser::parseConstant() {
@@ -341,12 +384,13 @@ void Parser::parseBitsPerPixel() {
 void Parser::parseCompression() {
   const char compressionArray[4] = {m_data[30], m_data[31], m_data[32],
                                     m_data[33]};
-  uint32_t compression = bytesToUnsignedInt(compressionArray);
-  if (compression != 0) {
-    throw exceptions::BMPException(
-        "Error in compression(not 0) - in DIBHeader");
+  for (int i = 0; i < 4; ++i) {
+    if (compressionArray[i] != 0) {
+      throw exceptions::BMPException(
+          "Error in compression(not 0) - in DIBHeader");
+    }
   }
-  m_picture.setCompression(compression);
+  m_picture.setCompression(compressionArray);
 }
 
 void Parser::parseBitmapSizeWithoutCompression() {
@@ -366,11 +410,7 @@ void Parser::parseResolution() {
 void Parser::parseNumOfColors() {
   const char numOfColorsArray[4] = {m_data[46], m_data[47], m_data[48],
                                     m_data[49]};
-  uint32_t numOfColors = bytesToUnsignedInt(numOfColorsArray);
-  if (numOfColors == 0) {
-    numOfColors = std::pow(2, m_picture.getBitsPerPixel());
-  }
-  m_picture.setNumOfColors(numOfColors);
+  m_picture.setNumOfColors(numOfColorsArray);
 }
 
 void Parser::parseNumOfImportantColors() {
@@ -379,7 +419,7 @@ void Parser::parseNumOfImportantColors() {
   m_picture.setNumOfImportantColors(numOfImportantColorsArray);
 }
 
-uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) const {
+uint32_t bytesToUnsignedInt(const char bytes[4]) {
   uint32_t result = bytes[0];
   for (auto i = 1; i < 4; ++i) {
     result <<= 8;
@@ -388,7 +428,7 @@ uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) const {
   return result;
 }
 
-int Parser::bytesToSignedInt(const char bytes[4]) const {
+int bytesToSignedInt(const char bytes[4]) {
   int result = bytes[3];
   for (auto i = 2; i >= 0; --i) {
     result <<= 8;
@@ -421,7 +461,7 @@ void Parser::parseBitmapArray() {
     matrix::Mat green(height, width);
     matrix::Mat blue(height, width);
     uint32_t padding = width % 4;
-    for (uint32_t i = 0; i < height; ++i) {
+    for (int i = height - 1; i >= 0; --i) {
       for (uint32_t j = 0; j < width; ++j) {
         red.setValue(i, j, m_data[index]);
         green.setValue(i, j, m_data[index + 1]);
@@ -436,7 +476,7 @@ void Parser::parseBitmapArray() {
   } else {
     uint32_t padding = 4 - width % 4;
     matrix::Mat pixels(height, width);
-    for (uint32_t i = 0; i < height; ++i) {
+    for (int i = height - 1; i >= 0; --i) {
       for (uint32_t j = 0; j < width; ++j) {
         char colorNum = m_data[index];
         pixels.setValue(i, j, colorNum);

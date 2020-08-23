@@ -20,21 +20,21 @@ class BMP {
 private:
   // header members
   char m_magic[2]; // supposed to be 'BM'
-  uint32_t m_bmpFileSize;
+  char m_bmpFileSize[4];
   // addresses 6-9**********
   char m_reserved[4];
-  uint32_t m_pixelArrayAddress;
+  char m_pixelArrayAddress[4];
   // DIB header members
   char m_headerSize[4]; // supposed to be 40
-  int m_bitmapWidth;
-  int m_bitmapHeight;
+  char m_bitmapWidth[4];
+  char m_bitmapHeight[4];
   char m_constant[2];     // must be 1
   char m_bitsPerPixel[2]; // supposed to be 8 or 24
-  uint32_t m_compression; // supposed to be 0
+  char m_compression[4];  // supposed to be 0
   char m_bitmapSizeWithoutCompression[4];
   // addresses 38-43**********
   char m_resolution[8];
-  uint32_t m_numOfColors;
+  char m_numOfColors[4];
   // addresses 50-53**********
   char m_numberOfImportantColors[4];
   // color pallete members
@@ -92,7 +92,7 @@ public:
    *
    * @param bmpFileSize the new bmpFileSize
    */
-  void setBmpFileSize(const uint32_t &bmpFileSize);
+  void setBmpFileSize(const char bmpFileSize[4]);
 
   /**
    * @brief Set the Reserved member
@@ -106,7 +106,7 @@ public:
    *
    * @param pixelArrayAddress the new pixelArrayAddress
    */
-  void setPixelArrayAddress(const uint32_t &pixelArrayAddress);
+  void setPixelArrayAddress(const char pixelArrayAddress[4]);
 
   // DIB header setters
 
@@ -122,14 +122,14 @@ public:
    *
    * @param bitmapWidth the new bitmapWidth
    */
-  void setBitMapWidth(const int &bitmapWidth);
+  void setBitMapWidth(const char bitmapWidth[4]);
 
   /**
    * @brief Set the Bit Map Height member
    *
    * @param bitmapHeight the new bitmapHeight
    */
-  void setBitMapHeight(const int &bitmapHeight);
+  void setBitMapHeight(const char bitmapHeight[4]);
 
   /**
    * @brief Set the Constant member
@@ -152,7 +152,7 @@ public:
    *
    * @param compression the new compression
    */
-  void setCompression(const uint32_t &compression);
+  void setCompression(const char compression[4]);
 
   /**
    * @brief Set the Bitmap Size Without Compression member
@@ -174,7 +174,9 @@ public:
    *
    * @param numOfColors the new numOfColors
    */
-  void setNumOfColors(const uint32_t &numOfColors);
+  void setNumOfColors(const char numOfColors[4]);
+
+  void setNumOfColors(const size_t numOfColor);
 
   /**
    * @brief Set the Num Of Important Colors member
@@ -261,22 +263,6 @@ private:
   std::vector<char> m_data;
 
   // bytes to int
-
-  /**
-   * @brief turn 4 chars that represent an unsigned integer to unsigned integer
-   *
-   * @param bytes the array of the chars
-   * @return uint32_t the represented unsigned int
-   */
-  uint32_t bytesToUnsignedInt(const char bytes[4]) const;
-
-  /**
-   * @brief turn 4 chars that represent an signed integer to signed integer
-   *
-   * @param bytes the array of the chars
-   * @return int the represented signed int
-   */
-  int bytesToSignedInt(const char bytes[4]) const;
 
   // header
 
@@ -409,6 +395,22 @@ public:
    */
   BMP getPicture() const;
 };
+
+/**
+ * @brief turn 4 chars that represent an unsigned integer to unsigned integer
+ *
+ * @param bytes the array of the chars
+ * @return uint32_t the represented unsigned int
+ */
+uint32_t bytesToUnsignedInt(const char bytes[4]);
+
+/**
+ * @brief turn 4 chars that represent an signed integer to signed integer
+ *
+ * @param bytes the array of the chars
+ * @return int the represented signed int
+ */
+int bytesToSignedInt(const char bytes[4]);
 
 class Color {
 private:
