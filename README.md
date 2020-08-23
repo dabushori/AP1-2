@@ -5,7 +5,8 @@
 ### In this assignment we created:
 * Mat.cpp + Mat.h - a matrix class in cpp.
 * exceptions.cpp + exceptions.h - throwing exceptions.
-* bmp.cpp + bmp.h - parsing BMP pictures
+* bmp.cpp + bmp.h - parsing BMP pictures.
+* bmp_tester.cpp - with the given bmp_tester.hpp file.
 * * *
 ## Mat (Matrix) class is doing the following functions:
 ### The only member is a Matrix (from the first assignment)
@@ -20,7 +21,8 @@
 * Add another matrix
 * Multiply the matrix with another matrix
 * Multiply the matrix by scalar
-* Operator (rowIndex, colIndex) - get the value in the matrix
+* Operator (rowIndex, colIndex) - get the value in the matrix.
+* rotate90Degrees - return a matrix after rotating this matrix.
 ### We used The libmatrix.so to create most of the functions
 * * *
 ## ErrorCodesException class:
@@ -34,8 +36,10 @@
 ## BMP class is doing the following functions:
 * rotating the BMP picture 90 degrees clockwise.
 * converting the BMP picture to gray scale one.
+* writeToFile - write the photo into a BMP file.
 * setters to all the members in the class.
 * getters to some of the members.
+* toGray (private) - returns a color from a 3 given numbers. (rgb)
 * * *
 ### BMP has a lot of members (for each line in the table) and we parse all of them into a BMP member in Parser.
 ### If The BMP format was diffrent we would have changed the members of the BMP class and then the Parser methods that parse them.
@@ -69,6 +73,16 @@
 * Has three members (chars): m_red, m_green, m_blue.
 * Has a constructor.
 * Has getters to the members.
+* Has a ToGray function - return a new color that is a grayscale of this color.
+* Has an isEqual function - checks if this color and the given color are the same.
+* * *
+## bmp_tester.cpp
+### This cpp file is testing if the code is working, we added two functions:
+* isBMPFile - checks if the input file is a bmp file.
+* isValidFile - checks if the file exists.
+### In addition to that, we implemented the two functions:
+* rotate_image - we checked if output and input files are bmp files and if the input file exists and then we rotated the image.
+* convert_to_grayscale - we checked if output and input files are bmp files and if the input file exists and then we converted the image to grayscale.
 * * *
 ## Tests
 * Tested the Matrix part with tests that we made.
@@ -78,3 +92,5 @@
 * * *
 # "c++ is the best because it warms our heart and not our computers" - The God Of Programming - 2016
 ## Inspiration - https://www.youtube.com/watch?v=dQw4w9WgXcQ
+## Inspiration - https://www.youtube.com/watch?v=JkafqBj6dsk
+Note: If you want us to give you good songs every excercise ler us know!!!
