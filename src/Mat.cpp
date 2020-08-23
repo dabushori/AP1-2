@@ -4,6 +4,7 @@
 #include "Matrix.h"
 #include "exceptions.h"
 
+#include <iostream>
 #include <memory>
 #include <utility>
 
@@ -18,9 +19,13 @@ Mat::Mat(const uint32_t height, const uint32_t width) {
 }
 
 Mat::Mat(const Mat &other) {
-  ErrorCode code = matrix_copy(&m_matrix, other.m_matrix);
-  if (!error_isSuccess(code)) {
-    throw exceptions::ErrorCodesException(code);
+  if (other.m_matrix == nullptr) {
+    m_matrix = nullptr;
+  } else {
+    ErrorCode code = matrix_copy(&m_matrix, other.m_matrix);
+    if (!error_isSuccess(code)) {
+      throw exceptions::ErrorCodesException(code);
+    }
   }
 }
 
@@ -28,24 +33,39 @@ Mat &Mat::operator=(const Mat &other) {
   if (this == &other) {
     return *this;
   }
-  matrix_destroy(m_matrix);
-  ErrorCode code = matrix_copy(&m_matrix, other.m_matrix);
-  if (!error_isSuccess(code)) {
-    throw exceptions::ErrorCodesException(code);
+  if (other.m_matrix == nullptr) {
+    matrix_destroy(m_matrix);
+    this->m_matrix = nullptr;
+  } else {
+    matrix_destroy(m_matrix);
+
+    ErrorCode code = matrix_copy(&m_matrix, other.m_matrix);
+    if (!error_isSuccess(code)) {
+      throw exceptions::ErrorCodesException(code);
+    }
   }
   return *this;
 }
 
 Mat::Mat(Mat &&other) noexcept {
-  m_matrix = std::exchange(other.m_matrix, nullptr);
+  if (other.m_matrix == nullptr) {
+    m_matrix = nullptr;
+  } else {
+    m_matrix = std::exchange(other.m_matrix, nullptr);
+  }
 }
 
 Mat &Mat::operator=(Mat &&other) noexcept {
   if (this == &other) {
     return *this;
   }
-  matrix_destroy(this->m_matrix);
-  m_matrix = std::exchange(other.m_matrix, nullptr);
+  if (other.m_matrix == nullptr) {
+    matrix_destroy(this->m_matrix);
+    m_matrix = nullptr;
+  } else {
+    matrix_destroy(this->m_matrix);
+    m_matrix = std::exchange(other.m_matrix, nullptr);
+  }
   return *this;
 }
 

@@ -39,7 +39,6 @@ BMP BMP::convertToGrayScale() const {
     for (uint32_t i = 0; i < height; ++i) {
       for (uint32_t j = 0; j < width; ++j) {
         Color color(m_red(i, j), m_green(i, j), m_blue(i, j));
-
         bool found = false;
         for (auto it = newColors.begin(); it != newColors.end(); ++it) {
           if (!found && it->second.isEqual(color.toGray())) {
@@ -54,7 +53,8 @@ BMP BMP::convertToGrayScale() const {
         }
       }
     }
-
+    converted.setNumOfColors(newColors.size());
+    converted.setBitsPerPixel(8);
     converted.setColors(newColors);
     converted.setBitmapArray(pixels);
   }
@@ -89,6 +89,7 @@ void BMP::writeToFile(const std::string &outputFile) const {
   for (uint32_t i = 0; i < 4; ++i) {
     out << m_numberOfImportantColors[i];
   }
+
   if (getBitsPerPixel() == 8) {
     for (auto it = m_colors.begin(); it != m_colors.end(); ++it) {
       out << it->second.getRed() << it->second.getGreen()
@@ -100,6 +101,9 @@ void BMP::writeToFile(const std::string &outputFile) const {
       }
     }
   } else {
+
+    ////////////////////////////////////////////////////////////////////////
+
     for (uint32_t i = 0; i < m_red.getHeight(); ++i) {
       for (uint32_t j = 0; j < m_red.getWidth(); ++j) {
         out << m_red(i, j) << m_green(i, j) << m_blue(i, j);
@@ -157,6 +161,14 @@ void BMP::setBitsPerPixel(const char bitsPerPixel[2]) {
   m_bitsPerPixel[1] = bitsPerPixel[1];
 }
 
+void BMP::setBitsPerPixel(const int &bitsPerPixel) {
+  if (bitsPerPixel != 8 && bitsPerPixel != 24) {
+    throw exceptions::BMPException("bitsPerPixel not 8 or 24");
+  }
+  m_bitsPerPixel[0] = bitsPerPixel;
+  m_bitsPerPixel[1] = 0;
+}
+
 void BMP::setCompression(const uint32_t &compression) {
   m_compression = compression;
 }
@@ -186,6 +198,7 @@ void BMP::setColors(const std::map<char, Color> &colors) { m_colors = colors; }
 
 void BMP::setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
                          const matrix::Mat &blue) {
+  m_pixels = matrix::Mat();
   m_red = red;
   m_green = green;
   m_blue = blue;
@@ -198,7 +211,7 @@ void BMP::setBitmapArray(const matrix::Mat &pixels) {
   m_blue = matrix::Mat();
 }
 
-int BMP::getBitsPerPixel() const { return (int)m_bitsPerPixel[1]; }
+int BMP::getBitsPerPixel() const { return (int)m_bitsPerPixel[0]; }
 
 uint32_t BMP::getNumOfColors() const { return m_numOfColors; }
 
@@ -208,25 +221,25 @@ uint32_t BMP::getBitMapWidth() const { return m_bitmapWidth; }
 
 uint32_t BMP::getBitMapHeight() const { return m_bitmapHeight; }
 
-const std::map<char, Color> &BMP::getColors() const { return m_colors; }
+std::map<char, Color> &BMP::getColors() { return m_colors; }
 
 // Parser
 
-Parser::Parser(const std::string &filename) {
-  m_picture = std::make_unique<BMP>();
+Parser::Parser(const std::string &filename) : m_picture() {
+  // m_picture = std::make_unique<BMP>();
 
   std::ifstream in(filename, std::ios::binary);
   if (!in) {
     throw exceptions::BMPException("error occured in the file reading");
   }
 
-  m_data = {std::istreambuf_iterator<char>{in},
-            std::istreambuf_iterator<char>{}};
+  m_data = std::vector<char>{std::istreambuf_iterator<char>{in},
+                             std::istreambuf_iterator<char>{}};
 
-  if (!in.eof()) {
-    throw exceptions::BMPException(
-        "error occured - didn't reach the end of the file");
-  }
+  // if (!in.eof()) {
+  //   throw exceptions::BMPException(
+  //       "error occured - didn't reach the end of the file");
+  // }
 
   parseHeader();
   parseDIBHeader();
@@ -236,7 +249,7 @@ Parser::Parser(const std::string &filename) {
   in.close();
 }
 
-BMP &Parser::getPicture() const { return *m_picture; }
+BMP Parser::getPicture() const { return m_picture; }
 
 void Parser::parseHeader() {
   parseMagic();
@@ -250,23 +263,23 @@ void Parser::parseMagic() {
     throw exceptions::BMPException("Error in Magic - Header");
   }
   const char magic[2] = {m_data[0], m_data[1]};
-  m_picture->setMagic(magic);
+  m_picture.setMagic(magic);
 }
 
 void Parser::parseBmpFileSize() {
   const char bmpFileSize[4] = {m_data[2], m_data[3], m_data[4], m_data[5]};
-  m_picture->setBmpFileSize(bytesToUnsignedInt(bmpFileSize));
+  m_picture.setBmpFileSize(bytesToUnsignedInt(bmpFileSize));
 }
 
 void Parser::parseReserved() {
   const char reserved[4] = {m_data[6], m_data[7], m_data[8], m_data[9]};
-  m_picture->setReserved(reserved);
+  m_picture.setReserved(reserved);
 }
 
 void Parser::parsePixelArrayAddress() {
   const char pixelArrayAddress[4] = {m_data[10], m_data[11], m_data[12],
                                      m_data[13]};
-  m_picture->setPixelArrayAddress(bytesToUnsignedInt(pixelArrayAddress));
+  m_picture.setPixelArrayAddress(bytesToUnsignedInt(pixelArrayAddress));
 }
 
 void Parser::parseDIBHeader() {
@@ -290,35 +303,37 @@ void Parser::parseHeaderSize() {
     throw exceptions::BMPException(
         "Error in size of header(not 40) - in DIBHeader");
   }
-  m_picture->setHeaderSize(headerSize);
+  m_picture.setHeaderSize(headerSize);
 }
 
 void Parser::parseBitmapWidth() {
   const char bitmapWidth[4] = {m_data[18], m_data[19], m_data[20], m_data[21]};
-  m_picture->setBitMapWidth(bytesToSignedInt(bitmapWidth));
+  m_picture.setBitMapWidth(bytesToSignedInt(bitmapWidth));
 }
 
 void Parser::parseBitmapHeight() {
   const char bitmapHeight[4] = {m_data[22], m_data[23], m_data[24], m_data[25]};
-  m_picture->setBitMapHeight(bytesToSignedInt(bitmapHeight));
+  m_picture.setBitMapHeight(bytesToSignedInt(bitmapHeight));
 }
 
 void Parser::parseConstant() {
-  if (m_data[26] != 0 || m_data[27] != 1) {
+  if (m_data[26] != 1 || m_data[27] != 0) {
     throw exceptions::BMPException("Error in constant(not 1) - in DIBHeader");
   }
   const char constant[2] = {m_data[26], m_data[27]};
-  m_picture->setConstant(constant);
+  m_picture.setConstant(constant);
 }
 
 void Parser::parseBitsPerPixel() {
-  uint16_t bitsPerPixel = m_data[28];
+  char bitsPerPixelArray[2] = {m_data[28], m_data[29]};
+  uint16_t bitsPerPixel = m_data[29];
   bitsPerPixel <<= 8;
-  bitsPerPixel += m_data[29];
-  if (bitsPerPixel != 0) {
+  bitsPerPixel += m_data[28];
+  if (bitsPerPixel != 8 && bitsPerPixel != 24) {
     throw exceptions::BMPException(
-        "Error in bitsPerPixel(not 0) - in DIBHeader");
+        "Error in bitsPerPixel(not 8 and 24) - in DIBHeader");
   }
+  m_picture.setBitsPerPixel(bitsPerPixelArray);
 }
 
 void Parser::parseCompression() {
@@ -329,7 +344,7 @@ void Parser::parseCompression() {
     throw exceptions::BMPException(
         "Error in compression(not 0) - in DIBHeader");
   }
-  m_picture->setCompression(compression);
+  m_picture.setCompression(compression);
 }
 
 void Parser::parseBitmapSizeWithoutCompression() {
@@ -337,7 +352,7 @@ void Parser::parseBitmapSizeWithoutCompression() {
                                                      m_data[36], m_data[37]};
   uint32_t bitmapSizeWithoutCompression =
       bytesToUnsignedInt(bitmapSizeWithoutCompressionArray);
-  m_picture->setBitmapSizeWithoutCompression(bitmapSizeWithoutCompression);
+  m_picture.setBitmapSizeWithoutCompression(bitmapSizeWithoutCompression);
 }
 
 void Parser::parseResolution() {
@@ -345,7 +360,7 @@ void Parser::parseResolution() {
   for (int i = 0; i < 8; ++i) {
     resolution[i] = m_data[38 + i];
   }
-  m_picture->setResolution(resolution);
+  m_picture.setResolution(resolution);
 }
 
 void Parser::parseNumOfColors() {
@@ -353,20 +368,20 @@ void Parser::parseNumOfColors() {
                                     m_data[49]};
   uint32_t numOfColors = bytesToUnsignedInt(numOfColorsArray);
   if (numOfColors == 0) {
-    numOfColors = std::pow(2, m_picture->getBitsPerPixel());
+    numOfColors = std::pow(2, m_picture.getBitsPerPixel());
   }
-  m_picture->setNumOfColors(numOfColors);
+  m_picture.setNumOfColors(numOfColors);
 }
 
 void Parser::parseNumOfImportantColors() {
   const char numOfImportantColorsArray[4] = {m_data[50], m_data[51], m_data[52],
                                              m_data[53]};
-  m_picture->setNumOfImportantColors(numOfImportantColorsArray);
+  m_picture.setNumOfImportantColors(numOfImportantColorsArray);
 }
 
 uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) const {
-  uint32_t result = bytes[0];
-  for (auto i = 1; i < 4; i++) {
+  uint32_t result = bytes[3];
+  for (auto i = 2; i >= 0; --i) {
     result <<= 8;
     result += bytes[i];
   }
@@ -374,8 +389,8 @@ uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) const {
 }
 
 int Parser::bytesToSignedInt(const char bytes[4]) const {
-  int result = bytes[0];
-  for (auto i = 1; i < 4; i++) {
+  int result = bytes[3];
+  for (auto i = 2; i >= 0; --i) {
     result <<= 8;
     result += bytes[i];
   }
@@ -383,24 +398,25 @@ int Parser::bytesToSignedInt(const char bytes[4]) const {
 }
 
 void Parser::parseColorPallete() {
-  if (m_picture->getBitsPerPixel() == 8) {
+  if (m_picture.getBitsPerPixel() == 8) {
     std::map<char, Color> colors{};
     uint32_t currentColor = 54;
-    for (uint32_t i = 0; i < m_picture->getNumOfColors(); ++i) {
+    for (uint32_t i = 0; i < m_picture.getNumOfColors(); ++i) {
       colors[m_data[currentColor + 3]] =
           Color(m_data[currentColor], m_data[currentColor + 1],
                 m_data[currentColor + 2]);
       currentColor += 4;
     }
-    m_picture->setColors(colors);
+    m_picture.setColors(colors);
   }
 }
 
 void Parser::parseBitmapArray() {
-  uint32_t height = m_picture->getBitMapHeight(),
-           width = m_picture->getBitMapWidth();
-  uint32_t index = m_picture->getPixelArrayAddress();
-  if (m_picture->getBitsPerPixel() == 24) {
+
+  uint32_t height = m_picture.getBitMapHeight(),
+           width = m_picture.getBitMapWidth();
+  uint32_t index = m_picture.getPixelArrayAddress();
+  if (m_picture.getBitsPerPixel() == 24) {
     matrix::Mat red(height, width);
     matrix::Mat green(height, width);
     matrix::Mat blue(height, width);
@@ -415,7 +431,7 @@ void Parser::parseBitmapArray() {
       }
       index += padding;
     }
-    m_picture->setBitmapArray(red, green, blue);
+    m_picture.setBitmapArray(red, green, blue);
 
   } else {
     uint32_t padding = 4 - width % 4;
@@ -428,7 +444,7 @@ void Parser::parseBitmapArray() {
       }
       index += padding;
     }
-    m_picture->setBitmapArray(pixels);
+    m_picture.setBitmapArray(pixels);
   }
 }
 

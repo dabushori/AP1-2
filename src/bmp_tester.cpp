@@ -5,10 +5,9 @@
 namespace testing {
 namespace bmp {
 bool isBMPFile(const std::string &path) {
-  if (path.length() < 5) {
-    return false;
-  }
-  return (path == ".bmp") || isBMPFile(path.substr(1, path.length() - 1));
+  std::string bmp = ".bmp";
+  return (path.size() >= bmp.size() &&
+          path.compare(path.size() - bmp.size(), bmp.size(), bmp) == 0);
 }
 
 bool isValidFile(const std::string &path) {
@@ -46,7 +45,9 @@ void convert_to_grayscale(const std::string &imagePath,
     throw exceptions::BMPException("output file is not a .bmp file");
   }
   bmp_parser::Parser parser(imagePath);
-  parser.getPicture().convertToGrayScale().writeToFile(outputPath);
+  bmp_parser::BMP image = parser.getPicture();
+  bmp_parser::BMP grayImage = image.convertToGrayScale();
+  grayImage.writeToFile(outputPath);
 }
 } // namespace bmp
 } // namespace testing

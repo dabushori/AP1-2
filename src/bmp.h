@@ -145,6 +145,8 @@ public:
    */
   void setBitsPerPixel(const char bitsPerPixel[2]);
 
+  void setBitsPerPixel(const int &bitsPerPixel);
+
   /**
    * @brief Set the Compression member
    *
@@ -249,12 +251,13 @@ public:
    *
    * @return const std::map<char, Color>& the Colors member
    */
-  const std::map<char, Color> &getColors() const;
+  std::map<char, Color> &getColors();
 };
 
 class Parser {
 private:
-  std::unique_ptr<BMP> m_picture;
+  // std::unique_ptr<BMP> m_picture;
+  BMP m_picture;
   std::vector<char> m_data;
 
   // bytes to int
@@ -404,7 +407,7 @@ public:
    *
    * @return BMP& the picture that was parsed
    */
-  BMP &getPicture() const;
+  BMP getPicture() const;
 };
 
 class Color {
