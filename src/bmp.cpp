@@ -1,11 +1,11 @@
 #include "bmp.h"
 
-namespace bmp {
-void BMP::rotate_image(const std::string &imagePath,
-                       const std::string &outputPath) {}
+namespace bmp_parser {
+BMP BMP::rotateImage() {}
 
-void BMP::convert_to_grayscale(const std::string &imagePath,
-                               const std::string &outputPath) {}
+BMP BMP::convertToGrayScale() {}
+
+void BMP::writeToFile(const std::string &outputFile) {}
 
 // BMP
 
@@ -285,4 +285,4 @@ double Color::getGreen() { return m_green; }
 
 double Color::getBlue() { return m_blue; }
 
-} // namespace bmp
+} // namespace bmp_parser
