@@ -420,5 +420,9 @@ public:
    * @return double the Blue value
    */
   double getBlue();
+
+  Color toGray();
+
+  bool isEqual(const Color &other);
 };
 } // namespace bmp_parser

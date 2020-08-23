@@ -7,7 +7,49 @@ double BMP::toGray(const double red, const double green, const double blue) {
 
 BMP BMP::rotateImage() {}
 
-BMP BMP::convertToGrayScale() { BMP converted(*this); }
+BMP BMP::convertToGrayScale() {
+  BMP converted(*this);
+  if (converted.getBitsPerPixel() == 8) {
+
+    auto colors = converted.getColors();
+    std::map<char, Color> newColors;
+
+    for (auto it = colors.begin(); it != colors.end(); ++it) {
+      newColors.try_emplace(it->first, it->second.toGray());
+    }
+
+    converted.setColors(newColors);
+
+  } else {
+
+    uint32_t height = getBitMapHeight(), width = getBitMapWidth();
+    matrix::Mat pixels(height, width);
+    std::map<char, Color> newColors;
+    char key = 0;
+    for (uint32_t i = 0; i < height; ++i) {
+      for (uint32_t j = 0; j < width; ++j) {
+        Color color(m_red(i, j), m_green(i, j), m_blue(i, j));
+
+        bool found = false;
+        for (auto it = newColors.begin(); it != newColors.end(); ++it) {
+          if (!found && it->second.isEqual(color.toGray())) {
+            pixels.setValue(i, j, it->first);
+            found = true;
+          }
+        }
+        if (!found) {
+          newColors[key] = color.toGray();
+          pixels.setValue(i, j, key);
+          ++key;
+        }
+      }
+    }
+
+    converted.setColors(newColors);
+    converted.setBitmapArray(pixels);
+  }
+  return converted;
+}
 
 void BMP::writeToFile(const std::string &outputFile) {}
 
@@ -88,7 +130,12 @@ void BMP::setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
   m_blue = blue;
 }
 
-void BMP::setBitmapArray(const matrix::Mat &pixels) { m_pixels = pixels; }
+void BMP::setBitmapArray(const matrix::Mat &pixels) {
+  m_pixels = pixels;
+  m_red = matrix::Mat();
+  m_green = matrix::Mat();
+  m_blue = matrix::Mat();
+}
 
 int BMP::getBitsPerPixel() { return (int)m_bitsPerPixel[1]; }
 
@@ -341,5 +388,15 @@ double Color::getRed() { return m_red; }
 double Color::getGreen() { return m_green; }
 
 double Color::getBlue() { return m_blue; }
+
+Color Color::toGray() {
+  char val = std::round(0.2126 * m_red + 0.7152 * m_green + 0.0722 * m_blue);
+  return Color(val, val, val);
+}
+
+bool Color::isEqual(const Color &other) {
+  return m_red == other.m_red && m_green == other.m_green &&
+         m_blue == other.m_blue;
+}
 
 } // namespace bmp_parser
