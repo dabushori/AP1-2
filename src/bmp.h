@@ -45,14 +45,38 @@ private:
   matrix::Mat m_blue;
   matrix::Mat m_pixels;
 
-  double toGray(const double red, const double green, const double blue);
+  /**
+   * @brief turn a color into gray with the given formula
+   *
+   * @param red the red value of the color
+   * @param green the green value of the color
+   * @param blue the blue value of the color
+   * @return double the value of the gray color that we get (the red, green and
+   * blue values)
+   */
+  double toGray(const double red, const double green, const double blue) const;
 
 public:
-  BMP rotateImage();
+  /**
+   * @brief rotate the current image 90 degrees clockwise
+   *
+   * @return BMP the new rotated image
+   */
+  BMP rotateImage() const;
 
-  BMP convertToGrayScale();
+  /**
+   * @brief convert the current image into gray scale colored
+   *
+   * @return BMP the new gray scale colored image
+   */
+  BMP convertToGrayScale() const;
 
-  void writeToFile(const std::string &outputFile);
+  /**
+   * @brief write the current image to the given file
+   *
+   * @param outputFile the given file
+   */
+  void writeToFile(const std::string &outputFile) const;
 
   // header setters
 
@@ -169,58 +193,63 @@ public:
   // bitmap array setters
 
   /**
-   * @brief Set the Bitmap Array member
+   * @brief Set the Bitmap Array member in the case of 24 bits per pixel
    *
-   * @param red the new red
-   * @param green the new green
-   * @param blue the new blue
+   * @param red the new red member
+   * @param green the new green member
+   * @param blue the new blue member
    */
   void setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
                       const matrix::Mat &blue);
 
+  /**
+   * @brief Set the Bitmap Array member in the case of 8 bits per pixel
+   *
+   * @param pixels the new pixels member
+   */
   void setBitmapArray(const matrix::Mat &pixels);
 
   /**
    * @brief Get the Bits Per Pixel member
    *
-   * @return const int the Bits Per Pixel member
+   * @return int the Bits Per Pixel member
    */
-  int getBitsPerPixel();
+  int getBitsPerPixel() const;
 
   /**
    * @brief Get the Num Of Colors member
    *
-   * @return const uint32_t the Num Of Colors member
+   * @return uint32_t the Num Of Colors member
    */
-  uint32_t getNumOfColors();
+  uint32_t getNumOfColors() const;
 
   /**
    * @brief Get the Pixel Array Address member
    *
-   * @return const uint32_t the Pixel Array Address member
+   * @return uint32_t the Pixel Array Address member
    */
-  uint32_t getPixelArrayAddress();
+  uint32_t getPixelArrayAddress() const;
 
   /**
    * @brief Get the Bit Map Width member
    *
-   * @return const uint32_t the Bit Map Width member
+   * @return uint32_t the Bit Map Width member
    */
-  uint32_t getBitMapWidth();
+  uint32_t getBitMapWidth() const;
 
   /**
    * @brief Get the Bit Map Height member
    *
-   * @return const uint32_t the Bit Map Height member
+   * @return uint32_t the Bit Map Height member
    */
-  uint32_t getBitMapHeight();
+  uint32_t getBitMapHeight() const;
 
   /**
    * @brief Get the Colors member
    *
    * @return const std::map<char, Color>& the Colors member
    */
-  const std::map<char, Color> &getColors();
+  const std::map<char, Color> &getColors() const;
 };
 
 class Parser {
@@ -236,7 +265,7 @@ private:
    * @param bytes the array of the chars
    * @return uint32_t the represented unsigned int
    */
-  uint32_t bytesToUnsignedInt(const char bytes[4]);
+  uint32_t bytesToUnsignedInt(const char bytes[4]) const;
 
   /**
    * @brief turn 4 chars that represent an signed integer to signed integer
@@ -244,7 +273,7 @@ private:
    * @param bytes the array of the chars
    * @return int the represented signed int
    */
-  int bytesToSignedInt(const char bytes[4]);
+  int bytesToSignedInt(const char bytes[4]) const;
 
   // header
 
@@ -375,7 +404,7 @@ public:
    *
    * @return BMP& the picture that was parsed
    */
-  BMP &getPicture();
+  BMP &getPicture() const;
 };
 
 class Color {
@@ -405,24 +434,36 @@ public:
    *
    * @return double the Red value
    */
-  double getRed();
+  double getRed() const;
 
   /**
    * @brief Get the Green value
    *
    * @return double the Green value
    */
-  double getGreen();
+  double getGreen() const;
 
   /**
    * @brief Get the Blue value
    *
    * @return double the Blue value
    */
-  double getBlue();
+  double getBlue() const;
 
-  Color toGray();
+  /**
+   * @brief convert the current color into a gray scale color
+   *
+   * @return Color the new gray scale colored
+   */
+  Color toGray() const;
 
-  bool isEqual(const Color &other);
+  /**
+   * @brief check if the cureent color is equal to the given color
+   *
+   * @param other the given color
+   * @return true if they are equal
+   * @return false otherwise
+   */
+  bool isEqual(const Color &other) const;
 };
 } // namespace bmp_parser
