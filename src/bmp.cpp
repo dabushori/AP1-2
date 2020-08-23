@@ -62,13 +62,50 @@ BMP BMP::convertToGrayScale() const {
 }
 
 void BMP::writeToFile(const std::string &outputFile) const {
-  std::ofstream out(outputFile);
+  std::ofstream out(outputFile, std::ios::binary | std::ios::trunc);
   if (!out) {
     throw exceptions::BMPException(
         "error occured - couldn't open the output file");
   }
 
-  // writing
+  out << m_magic[0] << m_magic[1];
+  out << m_bmpFileSize;
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_reserved[i];
+  }
+
+  out << m_pixelArrayAddress;
+  out << m_headerSize;
+  out << m_bitmapWidth;
+  out << m_bitmapHeight;
+  out << m_constant[0] << m_constant[1];
+  out << m_bitsPerPixel[0] << m_bitsPerPixel[1];
+  out << m_compression;
+  out << m_bitmapSizeWithoutCompression;
+  for (uint32_t i = 0; i < 8; ++i) {
+    out << m_resolution[i];
+  }
+  out << m_numOfColors;
+  for (uint32_t i = 0; i < 4; ++i) {
+    out << m_numberOfImportantColors[i];
+  }
+  if (getBitsPerPixel() == 8) {
+    for (auto it = m_colors.begin(); it != m_colors.end(); ++it) {
+      out << it->second.getRed() << it->second.getGreen()
+          << it->second.getBlue() << it->first;
+    }
+    for (uint32_t i = 0; i < m_pixels.getHeight(); ++i) {
+      for (uint32_t j = 0; j < m_pixels.getWidth(); ++j) {
+        out << m_pixels(i, j);
+      }
+    }
+  } else {
+    for (uint32_t i = 0; i < m_red.getHeight(); ++i) {
+      for (uint32_t j = 0; j < m_red.getWidth(); ++j) {
+        out << m_red(i, j) << m_green(i, j) << m_blue(i, j);
+      }
+    }
+  }
 
   if (!out) {
     throw exceptions::BMPException(
