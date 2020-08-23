@@ -5,12 +5,14 @@
 namespace testing {
 namespace bmp {
 void rotate_image(const std::string &imagePath, const std::string &outputPath) {
+  // need to check the file
   bmp_parser::Parser parser(imagePath);
   parser.getPicture().rotateImage().writeToFile(outputPath);
 }
 
 void convert_to_grayscale(const std::string &imagePath,
                           const std::string &outputPath) {
+  // need to check the file
   bmp_parser::Parser parser(imagePath);
   parser.getPicture().convertToGrayScale().writeToFile(outputPath);
 }

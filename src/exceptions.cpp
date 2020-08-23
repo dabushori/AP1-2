@@ -15,5 +15,5 @@ const char *ErrorCodesException::what() const noexcept {
 
 BMPException::BMPException(const std::string &message) { m_message = message; }
 
-const char *BMPException::what() const noexcept { return m_message.c_str(); }
+const char *BMPException::what() const noexcept { return m_message.data(); }
 } // namespace exceptions

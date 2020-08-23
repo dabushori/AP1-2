@@ -100,9 +100,20 @@ const std::map<char, Color> &BMP::getColors() { return m_colors; }
 
 Parser::Parser(const std::string &filename) {
   m_picture = std::make_unique<BMP>();
+
   std::ifstream in(filename, std::ios::binary);
+  if (!in) {
+    throw exceptions::BMPException("error occured in the file reading");
+  }
+
   m_data = {std::istreambuf_iterator<char>{in},
             std::istreambuf_iterator<char>{}};
+
+  if (!in.eof()) {
+    throw exceptions::BMPException(
+        "error occured - didn't reach the end of the file");
+  }
+
   parseHeader();
   parseDIBHeader();
   parseColorPallete();

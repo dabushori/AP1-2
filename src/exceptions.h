@@ -3,7 +3,6 @@
 #include "ErrorCode.h"
 
 #include <exception>
-#include <string.h>
 #include <string>
 
 namespace exceptions {
