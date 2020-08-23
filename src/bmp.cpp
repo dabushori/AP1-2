@@ -18,6 +18,12 @@ void BMP::setBmpFileSize(const uint32_t &bmpFileSize) {
   m_bmpFileSize = bmpFileSize;
 }
 
+void BMP::setReserved(const char reserved[4]) {
+  for (int i = 0; i < 4; ++i) {
+    m_reserved[i] = reserved[i];
+  }
+}
+
 void BMP::setPixelArrayAddress(const uint32_t &pixelArrayAddress) {
   m_pixelArrayAddress = pixelArrayAddress;
 }
@@ -53,8 +59,20 @@ void BMP::setBitmapSizeWithoutCompression(
   m_bitmapSizeWithoutCompression = bitmapSizeWithoutCompression;
 }
 
+void BMP::setResolution(const char resolution[8]) {
+  for (int i = 0; i < 8; ++i) {
+    m_resolution[i] = resolution[i];
+  }
+}
+
 void BMP::setNumOfColors(const uint32_t &numOfColors) {
   m_numOfColors = numOfColors;
+}
+
+void BMP::setNumOfImportantColors(const char numOfImportantColors[4]) {
+  for (int i = 0; i < 4; ++i) {
+    m_numberOfImportantColors[i] = numOfImportantColors[i];
+  }
 }
 
 void BMP::setColors(const std::map<char, Color> &colors) { m_colors = colors; }
@@ -96,6 +114,7 @@ BMP &Parser::getPicture() { return *m_picture; }
 void Parser::parseHeader() {
   parseMagic();
   parseBmpFileSize();
+  parseReserved();
   parsePixelArrayAddress();
 }
 
@@ -112,6 +131,11 @@ void Parser::parseBmpFileSize() {
   m_picture->setBmpFileSize(bytesToUnsignedInt(bmpFileSize));
 }
 
+void Parser::parseReserved() {
+  const char reserved[4] = {m_data[6], m_data[7], m_data[8], m_data[9]};
+  m_picture->setReserved(reserved);
+}
+
 void Parser::parsePixelArrayAddress() {
   const char pixelArrayAddress[4] = {m_data[10], m_data[11], m_data[12],
                                      m_data[13]};
@@ -126,7 +150,9 @@ void Parser::parseDIBHeader() {
   parseBitsPerPixel();
   parseCompression();
   parseBitmapSizeWithoutCompression();
+  parseResolution();
   parseNumOfColors();
+  parseNumOfImportantColors();
 }
 
 void Parser::parseHeaderSize() {
@@ -187,6 +213,14 @@ void Parser::parseBitmapSizeWithoutCompression() {
   m_picture->setBitmapSizeWithoutCompression(bitmapSizeWithoutCompression);
 }
 
+void Parser::parseResolution() {
+  char resolution[8];
+  for (int i = 0; i < 8; ++i) {
+    resolution[i] = m_data[38 + i];
+  }
+  m_picture->setResolution(resolution);
+}
+
 void Parser::parseNumOfColors() {
   const char numOfColorsArray[4] = {m_data[46], m_data[47], m_data[48],
                                     m_data[49]};
@@ -195,6 +229,12 @@ void Parser::parseNumOfColors() {
     numOfColors = std::pow(2, m_picture->getBitsPerPixel());
   }
   m_picture->setNumOfColors(numOfColors);
+}
+
+void Parser::parseNumOfImportantColors() {
+  const char numOfImportantColorsArray[4] = {m_data[50], m_data[51], m_data[52],
+                                             m_data[53]};
+  m_picture->setNumOfImportantColors(numOfImportantColorsArray);
 }
 
 uint32_t Parser::bytesToUnsignedInt(const char bytes[4]) {

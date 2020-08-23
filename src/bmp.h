@@ -21,6 +21,8 @@ private:
   // header members
   char m_magic[2]; // supposed to be 'BM'
   uint32_t m_bmpFileSize;
+  // addresses 6-9**********
+  char m_reserved[4];
   uint32_t m_pixelArrayAddress;
   // DIB header members
   uint32_t m_headerSize; // supposed to be 40
@@ -30,7 +32,11 @@ private:
   char m_bitsPerPixel[2]; // supposed to be 8 or 24
   uint32_t m_compression; // supposed to be 0
   uint32_t m_bitmapSizeWithoutCompression;
+  // addresses 38-43**********
+  char m_resolution[8];
   uint32_t m_numOfColors;
+  // addresses 50-53**********
+  char m_numberOfImportantColors[4];
   // color pallete members
   std::map<char, Color> m_colors;
   // bitmap array
@@ -60,6 +66,13 @@ public:
    * @param bmpFileSize the new bmpFileSize
    */
   void setBmpFileSize(const uint32_t &bmpFileSize);
+
+  /**
+   * @brief Set the Reserved member
+   *
+   * @param reserved the new reserved
+   */
+  void setReserved(const char reserved[4]);
 
   /**
    * @brief Set the Pixel Array Address member
@@ -121,11 +134,25 @@ public:
   setBitmapSizeWithoutCompression(const uint32_t &bitmapSizeWithoutCompression);
 
   /**
+   * @brief Set the Resolution member
+   *
+   * @param resolution the new resolution
+   */
+  void setResolution(const char resolution[8]);
+
+  /**
    * @brief Set the Num Of Colors member
    *
    * @param numOfColors the new numOfColors
    */
   void setNumOfColors(const uint32_t &numOfColors);
+
+  /**
+   * @brief Set the Num Of Important Colors member
+   *
+   * @param numOfImportantColors the new numOfImportantColors
+   */
+  void setNumOfImportantColors(const char numOfImportantColors[4]);
 
   // color pallete setters
 
@@ -235,6 +262,12 @@ private:
   void parseBmpFileSize();
 
   /**
+   * @brief parse the reserved part in the header
+   *
+   */
+  void parseReserved();
+
+  /**
    * @brief parse the pixel array address part in the header
    *
    */
@@ -291,10 +324,22 @@ private:
   void parseBitmapSizeWithoutCompression();
 
   /**
+   * @brief parse the resolution part in the DIB header
+   *
+   */
+  void parseResolution();
+
+  /**
    * @brief parse the num of colors part in the DIB header
    *
    */
   void parseNumOfColors();
+
+  /**
+   * @brief parse the num of imporatant colors part in the DIB header
+   *
+   */
+  void parseNumOfImportantColors();
 
   // color pallete
 
@@ -371,4 +416,4 @@ public:
    */
   double getBlue();
 };
-} // namespace bmp
+} // namespace bmp_parser
