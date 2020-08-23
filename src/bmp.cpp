@@ -1,9 +1,13 @@
 #include "bmp.h"
 
 namespace bmp_parser {
+double BMP::toGray(const double red, const double green, const double blue) {
+  return std::round(0.2126 * red + 0.7152 * green + 0.0722 * blue);
+}
+
 BMP BMP::rotateImage() {}
 
-BMP BMP::convertToGrayScale() {}
+BMP BMP::convertToGrayScale() { BMP converted(*this); }
 
 void BMP::writeToFile(const std::string &outputFile) {}
 
@@ -83,6 +87,8 @@ void BMP::setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
   m_green = green;
   m_blue = blue;
 }
+
+void BMP::setBitmapArray(const matrix::Mat &pixels) { m_pixels = pixels; }
 
 int BMP::getBitsPerPixel() { return (int)m_bitsPerPixel[1]; }
 
@@ -283,11 +289,11 @@ void Parser::parseColorPallete() {
 void Parser::parseBitmapArray() {
   uint32_t height = m_picture->getBitMapHeight(),
            width = m_picture->getBitMapWidth();
-  matrix::Mat red(height, width);
-  matrix::Mat green(height, width);
-  matrix::Mat blue(height, width);
   uint32_t index = m_picture->getPixelArrayAddress();
   if (m_picture->getBitsPerPixel() == 24) {
+    matrix::Mat red(height, width);
+    matrix::Mat green(height, width);
+    matrix::Mat blue(height, width);
     uint32_t padding = width % 4;
     for (uint32_t i = 0; i < height; ++i) {
       for (uint32_t j = 0; j < width; ++j) {
@@ -299,21 +305,21 @@ void Parser::parseBitmapArray() {
       }
       index += padding;
     }
+    m_picture->setBitmapArray(red, green, blue);
+
   } else {
     uint32_t padding = 4 - width % 4;
+    matrix::Mat pixels(height, width);
     for (uint32_t i = 0; i < height; ++i) {
       for (uint32_t j = 0; j < width; ++j) {
         char colorNum = m_data[index];
-        auto colors = m_picture->getColors();
-        red.setValue(i, j, colors[colorNum].getRed());
-        green.setValue(i, j, colors[colorNum].getGreen());
-        blue.setValue(i, j, colors[colorNum].getBlue());
+        pixels.setValue(i, j, colorNum);
         ++index;
       }
       index += padding;
     }
+    m_picture->setBitmapArray(pixels);
   }
-  m_picture->setBitmapArray(red, green, blue);
 }
 
 // Color

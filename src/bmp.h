@@ -43,6 +43,9 @@ private:
   matrix::Mat m_red;
   matrix::Mat m_green;
   matrix::Mat m_blue;
+  matrix::Mat m_pixels;
+
+  double toGray(const double red, const double green, const double blue);
 
 public:
   BMP rotateImage();
@@ -174,6 +177,8 @@ public:
    */
   void setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
                       const matrix::Mat &blue);
+
+  void setBitmapArray(const matrix::Mat &pixels);
 
   /**
    * @brief Get the Bits Per Pixel member
