@@ -2,7 +2,24 @@
 
 namespace testing {
 namespace bmp {
-bool isValidPath(const std::string &path);
+
+/**
+ * @brief checks if the given path is a .bmp file
+ *
+ * @param path the given path
+ * @return true if it is a .bmp file
+ * @return false otherwise
+ */
+bool isBMPFile(const std::string &path);
+
+/**
+ * @brief checks if the given file exists
+ *
+ * @param path the given file
+ * @return true if it exists
+ * @return false otherwise
+ */
+bool isValidFile(const std::string &path);
 
 /**
  * @brief Receives a path to a BMP image on the disk and rotates it 90 degrees

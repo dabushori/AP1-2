@@ -45,13 +45,37 @@ private:
   matrix::Mat m_blue;
   matrix::Mat m_pixels;
 
+  /**
+   * @brief turn a color into gray with the given formula
+   *
+   * @param red the red value of the color
+   * @param green the green value of the color
+   * @param blue the blue value of the color
+   * @return double the value of the gray color that we get (the red, green and
+   * blue values)
+   */
   double toGray(const double red, const double green, const double blue);
 
 public:
+  /**
+   * @brief rotate the current image 90 degrees clockwise
+   *
+   * @return BMP the new rotated image
+   */
   BMP rotateImage();
 
+  /**
+   * @brief convert the current image into gray scale colored
+   *
+   * @return BMP the new gray scale colored image
+   */
   BMP convertToGrayScale();
 
+  /**
+   * @brief write the current image to the given file
+   *
+   * @param outputFile the given file
+   */
   void writeToFile(const std::string &outputFile);
 
   // header setters
@@ -169,15 +193,20 @@ public:
   // bitmap array setters
 
   /**
-   * @brief Set the Bitmap Array member
+   * @brief Set the Bitmap Array member in the case of 24 bits per pixel
    *
-   * @param red the new red
-   * @param green the new green
-   * @param blue the new blue
+   * @param red the new red member
+   * @param green the new green member
+   * @param blue the new blue member
    */
   void setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
                       const matrix::Mat &blue);
 
+  /**
+   * @brief Set the Bitmap Array member in the case of 8 bits per pixel
+   *
+   * @param pixels the new pixels member
+   */
   void setBitmapArray(const matrix::Mat &pixels);
 
   /**
@@ -421,8 +450,20 @@ public:
    */
   double getBlue();
 
+  /**
+   * @brief convert the current color into a gray scale color
+   *
+   * @return Color the new gray scale colored
+   */
   Color toGray();
 
+  /**
+   * @brief check if the cureent color is equal to the given color
+   *
+   * @param other the given color
+   * @return true if they are equal
+   * @return false otherwise
+   */
   bool isEqual(const Color &other);
 };
 } // namespace bmp_parser
