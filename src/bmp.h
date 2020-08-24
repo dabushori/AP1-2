@@ -38,7 +38,7 @@ private:
   // addresses 50-53**********
   char m_numberOfImportantColors[4];
   // color pallete members
-  std::map<char, Color> m_colors;
+  std::vector<Color> m_colors;
   // bitmap array
   matrix::Mat m_red;
   matrix::Mat m_green;
@@ -196,7 +196,7 @@ public:
    *
    * @param colors the new colors
    */
-  void setColors(const std::map<char, Color> &colors);
+  void setColors(const std::vector<Color> &colors);
 
   // bitmap array setters
 
@@ -257,7 +257,7 @@ public:
    *
    * @return const std::map<char, Color>& the Colors member
    */
-  std::map<char, Color> &getColors();
+  std::vector<Color> &getColors();
 };
 
 class Parser {

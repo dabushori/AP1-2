@@ -140,10 +140,9 @@ Mat Mat::rotate90Degrees() const {
   Mat result(width, height);
   for (uint32_t i = 0; i < height; i++) {
     for (uint32_t j = 0; j < width; j++) {
-      result.setValue(j, height - 1 - i, (*this)(i,j));
+      result.setValue(j, height - 1 - i, (*this)(i, j));
     }
   }
-  
   return result;
 }
 } // namespace matrix

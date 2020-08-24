@@ -25,65 +25,40 @@ BMP BMP::convertToGrayScale() const {
   BMP converted(*this);
   if (converted.getBitsPerPixel() == 8) {
     auto colors = converted.getColors();
-    std::map<char, Color> newColors;
     for (auto it = colors.begin(); it != colors.end(); ++it) {
-      newColors.try_emplace(it->first, it->second.toGray());
+      *it = it->toGray();
     }
-    converted.setColors(newColors);
-    converted.setNumOfColors(newColors.size());
+    converted.setColors(colors);
+    converted.setNumOfColors(colors.size());
   } else {
     uint32_t height = getBitMapHeight(), width = getBitMapWidth();
     matrix::Mat pixels(height, width);
-    std::map<char, Color> newColors;
-    char key = 0;
+    std::vector<Color> colors{};
+    for (int i = -128; i < 128; ++i) {
+      colors.emplace_back(Color((char)i, i, i));
+    }
     for (uint32_t i = 0; i < height; ++i) {
       for (uint32_t j = 0; j < width; ++j) {
         Color color(m_red(i, j), m_green(i, j), m_blue(i, j));
         bool found = false;
-        for (auto it = newColors.begin(); it != newColors.end(); ++it) {
-          if (!found && it->second.isEqual(color.toGray())) {
-            pixels.setValue(i, j, it->first);
+        int index = 0;
+        for (auto it = colors.begin(); it != colors.end(); ++it) {
+          if (!found && color.isEqual(*it)) {
+            pixels.setValue(i, j, index);
             found = true;
           }
-        }
-        if (!found) {
-          newColors[key] = color.toGray();
-          pixels.setValue(i, j, key);
-          ++key;
+          ++index;
         }
       }
     }
     converted.setBitsPerPixel(8);
-    converted.setNumOfColors(newColors.size());
+    converted.setNumOfColors(colors.size());
     converted.setPixelArrayAddress(converted.getPixelArrayAddress() +
                                    converted.getNumOfColors() * 4);
-    converted.setColors(newColors);
+    converted.setColors(colors);
     converted.setBitmapArray(pixels);
     converted.setBmpFileSize(54 + getNumOfColors() * 4 +
                              getBitMapHeight() * getBitMapWidth());
-  }
-
-  std::ofstream out("file.txt", std::ios::trunc);
-
-  out << "rgb:" << std::endl;
-  for (uint32_t i = 0; i < m_red.getHeight(); ++i) {
-    for (uint32_t j = 0; j < m_red.getHeight(); ++j) {
-      out << i << "," << j << " " << m_red(i, j) << " " << m_green(i, j) << " "
-          << m_blue(i, j) << "\n";
-    }
-  }
-  out << "pixels:" << std::endl;
-  for (uint32_t i = 0; i < converted.m_pixels.getHeight(); ++i) {
-    for (uint32_t j = 0; j < converted.m_pixels.getHeight(); ++j) {
-      out << i << "," << j << " " << converted.m_pixels(i, j) << "\n";
-    }
-  }
-  out << "color pallete:" << std::endl;
-  for (auto it = converted.m_colors.begin(); it != converted.m_colors.end();
-       ++it) {
-    out << (int)it->first << " " << (int)it->second.getRed() << " "
-        << (int)it->second.getGreen() << " " << (int)it->second.getBlue()
-        << "\n";
   }
   return converted;
 }
@@ -135,8 +110,8 @@ void BMP::writeToFile(const std::string &outputFile) const {
 
   if (getBitsPerPixel() == 8) {
     for (auto it = m_colors.begin(); it != m_colors.end(); ++it) {
-      out << (char)it->second.getRed() << (char)it->second.getGreen()
-          << (char)it->second.getBlue() << (char)it->first;
+      out << (char)it->getRed() << (char)it->getGreen() << (char)it->getBlue()
+          << (char)0;
     }
     uint32_t padding = getBitMapWidth() % 4;
     for (int i = m_pixels.getHeight() - 1; i >= 0; --i) {
@@ -148,9 +123,13 @@ void BMP::writeToFile(const std::string &outputFile) const {
       }
     }
   } else {
+    uint32_t padding = getBitMapWidth() % 4;
     for (int i = m_red.getHeight() - 1; i >= 0; --i) {
       for (uint32_t j = 0; j < m_red.getWidth(); ++j) {
         out << (char)m_red(i, j) << (char)m_green(i, j) << (char)m_blue(i, j);
+      }
+      for (uint32_t j = 0; j < padding; j++) {
+        out << (char)0;
       }
     }
   }
@@ -280,7 +259,7 @@ void BMP::setNumOfImportantColors(const char numOfImportantColors[4]) {
   }
 }
 
-void BMP::setColors(const std::map<char, Color> &colors) { m_colors = colors; }
+void BMP::setColors(const std::vector<Color> &colors) { m_colors = colors; }
 
 void BMP::setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
                          const matrix::Mat &blue) {
@@ -318,7 +297,7 @@ uint32_t BMP::getBitMapHeight() const {
   return bytesToSignedInt(m_bitmapHeight);
 }
 
-std::map<char, Color> &BMP::getColors() { return m_colors; }
+std::vector<Color> &BMP::getColors() { return m_colors; }
 
 // Parser
 
@@ -487,12 +466,11 @@ int bytesToSignedInt(const char bytes[4]) {
 
 void Parser::parseColorPallete() {
   if (m_picture.getBitsPerPixel() == 8) {
-    std::map<char, Color> colors{};
+    std::vector<Color> colors{};
     uint32_t currentColor = 54;
     for (uint32_t i = 0; i < m_picture.getNumOfColors(); ++i) {
-      colors[m_data[currentColor + 3]] =
-          Color(m_data[currentColor], m_data[currentColor + 1],
-                m_data[currentColor + 2]);
+      colors.emplace_back(Color(m_data[currentColor], m_data[currentColor + 1],
+                                m_data[currentColor + 2]));
       currentColor += 4;
     }
     m_picture.setColors(colors);
@@ -519,7 +497,7 @@ void Parser::parseBitmapArray() {
     }
     m_picture.setBitmapArray(red, green, blue);
   } else {
-    uint32_t padding = 4 - width % 4;
+    uint32_t padding = width % 4;
     matrix::Mat pixels(height, width);
     for (int i = height - 1; i >= 0; --i) {
       for (uint32_t j = 0; j < width; ++j) {
