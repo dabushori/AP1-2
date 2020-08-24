@@ -13,9 +13,10 @@ BMP BMP::rotateImage() const {
     converted.setBitmapArray(m_red.rotate90Degrees(), m_green.rotate90Degrees(),
                              m_blue.rotate90Degrees());
   }
-  char newWidth[4] = {m_bitmapHeight[0], m_bitmapHeight[1], m_bitmapHeight[2], m_bitmapHeight[3]};
-    converted.setBitMapHeight(m_bitmapWidth);
-    converted.setBitMapWidth(newWidth);
+  char newWidth[4] = {m_bitmapHeight[0], m_bitmapHeight[1], m_bitmapHeight[2],
+                      m_bitmapHeight[3]};
+  converted.setBitMapHeight(m_bitmapWidth);
+  converted.setBitMapWidth(newWidth);
   return converted;
 }
 
@@ -31,34 +32,48 @@ BMP BMP::convertToGrayScale() const {
     converted.setColors(colors);
     converted.setNumOfColors(colors.size());
   } else {
+    /*
     uint32_t height = getBitMapHeight(), width = getBitMapWidth();
     matrix::Mat pixels(height, width);
     std::vector<Color> colors{};
-    for (int i = -128; i < 128; ++i) {
-      colors.emplace_back(Color((char)i, i, i));
-    }
     for (uint32_t i = 0; i < height; ++i) {
       for (uint32_t j = 0; j < width; ++j) {
         Color color(m_red(i, j), m_green(i, j), m_blue(i, j));
+        Color gray = color.toGray();
         bool found = false;
         int index = 0;
         for (auto it = colors.begin(); it != colors.end(); ++it) {
-          if (!found && color.isEqual(*it)) {
+          if (!found && it->isEqual(gray)) {
             pixels.setValue(i, j, index);
             found = true;
           }
           ++index;
         }
+        if (!found) {
+          colors.emplace_back(gray);
+          pixels.setValue(i, j, colors.size() - 1);
+        }
       }
     }
     converted.setBitsPerPixel(8);
+    converted.setColors(colors);
     converted.setNumOfColors(colors.size());
     converted.setPixelArrayAddress(converted.getPixelArrayAddress() +
                                    converted.getNumOfColors() * 4);
-    converted.setColors(colors);
     converted.setBitmapArray(pixels);
     converted.setBmpFileSize(54 + getNumOfColors() * 4 +
                              getBitMapHeight() * getBitMapWidth());
+                             */
+
+    for (uint32_t i = 0; i < converted.m_red.getHeight(); ++i) {
+      for (uint32_t j = 0; j < converted.m_red.getWidth(); ++j) {
+        Color color(m_red(i, j), m_green(i, j), m_blue(i, j));
+        Color gray = color.toGray();
+        converted.m_red.setValue(i, j, gray.getRed());
+        converted.m_green.setValue(i, j, gray.getGreen());
+        converted.m_blue.setValue(i, j, gray.getBlue());
+      }
+    }
   }
   return converted;
 }
@@ -532,7 +547,9 @@ double Color::getGreen() const { return m_green; }
 double Color::getBlue() const { return m_blue; }
 
 Color Color::toGray() const {
-  char val = std::round(0.2126 * m_red + 0.7152 * m_green + 0.0722 * m_blue);
+  char val = std::round(0.2126 * static_cast<uint8_t>(m_red) +
+                        0.7152 * static_cast<uint8_t>(m_green) +
+                        0.0722 * static_cast<uint8_t>(m_blue));
   return Color(val, val, val);
 }
 
