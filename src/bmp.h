@@ -54,7 +54,7 @@ private:
    * @return double the value of the gray color that we get (the red, green and
    * blue values)
    */
-  double toGray(const double red, const double green, const double blue) const;
+  double toGray(const char red, const char green, const char blue) const;
 
 public:
   /**
@@ -94,6 +94,8 @@ public:
    */
   void setBmpFileSize(const char bmpFileSize[4]);
 
+  void setBmpFileSize(const int size);
+
   /**
    * @brief Set the Reserved member
    *
@@ -107,6 +109,8 @@ public:
    * @param pixelArrayAddress the new pixelArrayAddress
    */
   void setPixelArrayAddress(const char pixelArrayAddress[4]);
+
+  void setPixelArrayAddress(const int address);
 
   // DIB header setters
 

@@ -1,8 +1,7 @@
 #include "bmp.h"
 
 namespace bmp_parser {
-double BMP::toGray(const double red, const double green,
-                   const double blue) const {
+double BMP::toGray(const char red, const char green, const char blue) const {
   return std::round(0.2126 * red + 0.7152 * green + 0.0722 * blue);
 }
 
@@ -14,24 +13,25 @@ BMP BMP::rotateImage() const {
     converted.setBitmapArray(m_red.rotate90Degrees(), m_green.rotate90Degrees(),
                              m_blue.rotate90Degrees());
   }
+  char newWidth[4] = {m_bitmapHeight[0], m_bitmapHeight[1], m_bitmapHeight[2], m_bitmapHeight[3]};
+    converted.setBitMapHeight(m_bitmapWidth);
+    converted.setBitMapWidth(newWidth);
   return converted;
 }
+
+/// check from here
 
 BMP BMP::convertToGrayScale() const {
   BMP converted(*this);
   if (converted.getBitsPerPixel() == 8) {
-
     auto colors = converted.getColors();
     std::map<char, Color> newColors;
-
     for (auto it = colors.begin(); it != colors.end(); ++it) {
       newColors.try_emplace(it->first, it->second.toGray());
     }
-
     converted.setColors(newColors);
-
+    converted.setNumOfColors(newColors.size());
   } else {
-
     uint32_t height = getBitMapHeight(), width = getBitMapWidth();
     matrix::Mat pixels(height, width);
     std::map<char, Color> newColors;
@@ -53,13 +53,42 @@ BMP BMP::convertToGrayScale() const {
         }
       }
     }
-    converted.setNumOfColors(newColors.size());
     converted.setBitsPerPixel(8);
+    converted.setNumOfColors(newColors.size());
+    converted.setPixelArrayAddress(converted.getPixelArrayAddress() +
+                                   converted.getNumOfColors() * 4);
     converted.setColors(newColors);
     converted.setBitmapArray(pixels);
+    converted.setBmpFileSize(54 + getNumOfColors() * 4 +
+                             getBitMapHeight() * getBitMapWidth());
+  }
+
+  std::ofstream out("file.txt", std::ios::trunc);
+
+  out << "rgb:" << std::endl;
+  for (uint32_t i = 0; i < m_red.getHeight(); ++i) {
+    for (uint32_t j = 0; j < m_red.getHeight(); ++j) {
+      out << i << "," << j << " " << m_red(i, j) << " " << m_green(i, j) << " "
+          << m_blue(i, j) << "\n";
+    }
+  }
+  out << "pixels:" << std::endl;
+  for (uint32_t i = 0; i < converted.m_pixels.getHeight(); ++i) {
+    for (uint32_t j = 0; j < converted.m_pixels.getHeight(); ++j) {
+      out << i << "," << j << " " << converted.m_pixels(i, j) << "\n";
+    }
+  }
+  out << "color pallete:" << std::endl;
+  for (auto it = converted.m_colors.begin(); it != converted.m_colors.end();
+       ++it) {
+    out << (int)it->first << " " << (int)it->second.getRed() << " "
+        << (int)it->second.getGreen() << " " << (int)it->second.getBlue()
+        << "\n";
   }
   return converted;
 }
+
+/// to here
 
 void BMP::writeToFile(const std::string &outputFile) const {
   std::ofstream out(outputFile, std::ios::binary | std::ios::trunc);
@@ -106,16 +135,19 @@ void BMP::writeToFile(const std::string &outputFile) const {
 
   if (getBitsPerPixel() == 8) {
     for (auto it = m_colors.begin(); it != m_colors.end(); ++it) {
-      out << it->second.getRed() << it->second.getGreen()
-          << it->second.getBlue() << it->first;
+      out << (char)it->second.getRed() << (char)it->second.getGreen()
+          << (char)it->second.getBlue() << (char)it->first;
     }
+    uint32_t padding = getBitMapWidth() % 4;
     for (int i = m_pixels.getHeight() - 1; i >= 0; --i) {
       for (uint32_t j = 0; j < m_pixels.getWidth(); ++j) {
         out << (char)m_pixels(i, j);
       }
+      for (uint32_t j = 0; j < padding; j++) {
+        out << (char)0;
+      }
     }
   } else {
-
     for (int i = m_red.getHeight() - 1; i >= 0; --i) {
       for (uint32_t j = 0; j < m_red.getWidth(); ++j) {
         out << (char)m_red(i, j) << (char)m_green(i, j) << (char)m_blue(i, j);
@@ -143,6 +175,14 @@ void BMP::setBmpFileSize(const char bmpFileSize[4]) {
   }
 }
 
+void BMP::setBmpFileSize(const int size) {
+  int temp = size;
+  for (uint32_t i = 0; i < 4; ++i) {
+    m_bmpFileSize[i] = (char)size;
+    temp >>= 8;
+  }
+}
+
 void BMP::setReserved(const char reserved[4]) {
   for (int i = 0; i < 4; ++i) {
     m_reserved[i] = reserved[i];
@@ -152,6 +192,14 @@ void BMP::setReserved(const char reserved[4]) {
 void BMP::setPixelArrayAddress(const char pixelArrayAddress[4]) {
   for (uint32_t i = 0; i < 4; ++i) {
     m_pixelArrayAddress[i] = pixelArrayAddress[i];
+  }
+}
+
+void BMP::setPixelArrayAddress(const int address) {
+  int temp = address;
+  for (uint32_t i = 0; i < 4; ++i) {
+    m_pixelArrayAddress[i] = (char)temp;
+    temp >>= 8;
   }
 }
 
@@ -454,7 +502,6 @@ void Parser::parseColorPallete() {
 void Parser::parseBitmapArray() {
   uint32_t height = m_picture.getBitMapHeight(),
            width = m_picture.getBitMapWidth();
-
   uint32_t index = m_picture.getPixelArrayAddress();
   if (m_picture.getBitsPerPixel() == 24) {
     matrix::Mat red(height, width);
@@ -466,13 +513,11 @@ void Parser::parseBitmapArray() {
         red.setValue(i, j, m_data[index]);
         green.setValue(i, j, m_data[index + 1]);
         blue.setValue(i, j, m_data[index + 2]);
-
         index += 3;
       }
       index += padding;
     }
     m_picture.setBitmapArray(red, green, blue);
-
   } else {
     uint32_t padding = 4 - width % 4;
     matrix::Mat pixels(height, width);
