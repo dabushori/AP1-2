@@ -20,8 +20,6 @@ BMP BMP::rotateImage() const {
   return converted;
 }
 
-/// check from here
-
 BMP BMP::convertToGrayScale() const {
   BMP converted(*this);
   if (converted.getBitsPerPixel() == 8) {
@@ -32,39 +30,6 @@ BMP BMP::convertToGrayScale() const {
     converted.setColors(colors);
     converted.setNumOfColors(colors.size());
   } else {
-    /*
-    uint32_t height = getBitMapHeight(), width = getBitMapWidth();
-    matrix::Mat pixels(height, width);
-    std::vector<Color> colors{};
-    for (uint32_t i = 0; i < height; ++i) {
-      for (uint32_t j = 0; j < width; ++j) {
-        Color color(m_red(i, j), m_green(i, j), m_blue(i, j));
-        Color gray = color.toGray();
-        bool found = false;
-        int index = 0;
-        for (auto it = colors.begin(); it != colors.end(); ++it) {
-          if (!found && it->isEqual(gray)) {
-            pixels.setValue(i, j, index);
-            found = true;
-          }
-          ++index;
-        }
-        if (!found) {
-          colors.emplace_back(gray);
-          pixels.setValue(i, j, colors.size() - 1);
-        }
-      }
-    }
-    converted.setBitsPerPixel(8);
-    converted.setColors(colors);
-    converted.setNumOfColors(colors.size());
-    converted.setPixelArrayAddress(converted.getPixelArrayAddress() +
-                                   converted.getNumOfColors() * 4);
-    converted.setBitmapArray(pixels);
-    converted.setBmpFileSize(54 + getNumOfColors() * 4 +
-                             getBitMapHeight() * getBitMapWidth());
-                             */
-
     for (uint32_t i = 0; i < converted.m_red.getHeight(); ++i) {
       for (uint32_t j = 0; j < converted.m_red.getWidth(); ++j) {
         Color color(m_red(i, j), m_green(i, j), m_blue(i, j));
@@ -77,8 +42,6 @@ BMP BMP::convertToGrayScale() const {
   }
   return converted;
 }
-
-/// to here
 
 void BMP::writeToFile(const std::string &outputFile) const {
   std::ofstream out(outputFile, std::ios::binary | std::ios::trunc);
@@ -133,7 +96,7 @@ void BMP::writeToFile(const std::string &outputFile) const {
       for (uint32_t j = 0; j < m_pixels.getWidth(); ++j) {
         out << (char)m_pixels(i, j);
       }
-      for (uint32_t j = 0; j < padding; j++) {
+      for (uint32_t j = 0; j < padding; ++j) {
         out << (char)0;
       }
     }
@@ -143,7 +106,7 @@ void BMP::writeToFile(const std::string &outputFile) const {
       for (uint32_t j = 0; j < m_red.getWidth(); ++j) {
         out << (char)m_red(i, j) << (char)m_green(i, j) << (char)m_blue(i, j);
       }
-      for (uint32_t j = 0; j < padding; j++) {
+      for (uint32_t j = 0; j < padding; ++j) {
         out << (char)0;
       }
     }
@@ -303,13 +266,15 @@ uint32_t BMP::getNumOfColors() const {
 }
 
 uint32_t BMP::getPixelArrayAddress() const {
-  return bytesToSignedInt(m_pixelArrayAddress);
+  return bytesToUnsignedInt(m_pixelArrayAddress);
 }
 
-uint32_t BMP::getBitMapWidth() const { return bytesToSignedInt(m_bitmapWidth); }
+uint32_t BMP::getBitMapWidth() const {
+  return bytesToUnsignedInt(m_bitmapWidth);
+}
 
 uint32_t BMP::getBitMapHeight() const {
-  return bytesToSignedInt(m_bitmapHeight);
+  return bytesToUnsignedInt(m_bitmapHeight);
 }
 
 std::vector<Color> &BMP::getColors() { return m_colors; }
@@ -367,7 +332,7 @@ void Parser::parsePixelArrayAddress() {
   const char pixelArrayAddress[4] = {m_data[10], m_data[11], m_data[12],
                                      m_data[13]};
   m_picture.setPixelArrayAddress(pixelArrayAddress);
-} // namespace bmp_parser
+}
 
 void Parser::parseDIBHeader() {
   parseHeaderSize();
@@ -385,8 +350,7 @@ void Parser::parseDIBHeader() {
 void Parser::parseHeaderSize() {
   const char headerSizeArray[4] = {m_data[14], m_data[15], m_data[16],
                                    m_data[17]};
-  if (headerSizeArray[0] != 40 || headerSizeArray[1] != 0 ||
-      headerSizeArray[2] != 0 || headerSizeArray[3] != 0) {
+  if (bytesToSignedInt(headerSizeArray) != 40) {
     throw exceptions::BMPException(
         "Error in size of header(not 40) - in DIBHeader");
   }
@@ -426,11 +390,9 @@ void Parser::parseBitsPerPixel() {
 void Parser::parseCompression() {
   const char compressionArray[4] = {m_data[30], m_data[31], m_data[32],
                                     m_data[33]};
-  for (int i = 0; i < 4; ++i) {
-    if (compressionArray[i] != 0) {
-      throw exceptions::BMPException(
-          "Error in compression(not 0) - in DIBHeader");
-    }
+  if (bytesToSignedInt(compressionArray) != 0) {
+    throw exceptions::BMPException(
+        "Error in compression(not 0) - in DIBHeader");
   }
   m_picture.setCompression(compressionArray);
 }
@@ -462,8 +424,8 @@ void Parser::parseNumOfImportantColors() {
 }
 
 uint32_t bytesToUnsignedInt(const char bytes[4]) {
-  uint32_t result = bytes[0];
-  for (auto i = 1; i < 4; ++i) {
+  uint32_t result = bytes[3];
+  for (int i = 2; i >= 0; --i) {
     result <<= 8;
     result += bytes[i];
   }
@@ -472,7 +434,7 @@ uint32_t bytesToUnsignedInt(const char bytes[4]) {
 
 int bytesToSignedInt(const char bytes[4]) {
   int result = bytes[3];
-  for (auto i = 2; i >= 0; --i) {
+  for (int i = 2; i >= 0; --i) {
     result <<= 8;
     result += bytes[i];
   }
@@ -493,8 +455,8 @@ void Parser::parseColorPallete() {
 }
 
 void Parser::parseBitmapArray() {
-  uint32_t height = m_picture.getBitMapHeight(),
-           width = m_picture.getBitMapWidth();
+  uint32_t height = m_picture.getBitMapHeight();
+  uint32_t width = m_picture.getBitMapWidth();
   uint32_t index = m_picture.getPixelArrayAddress();
   if (m_picture.getBitsPerPixel() == 24) {
     matrix::Mat red(height, width);
@@ -557,5 +519,4 @@ bool Color::isEqual(const Color &other) const {
   return m_red == other.m_red && m_green == other.m_green &&
          m_blue == other.m_blue;
 }
-
 } // namespace bmp_parser

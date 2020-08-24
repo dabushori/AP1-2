@@ -2,6 +2,8 @@
 
 #include "bmp.h"
 
+#include <string>
+
 namespace testing {
 namespace bmp {
 bool isBMPFile(const std::string &path) {
@@ -45,9 +47,7 @@ void convert_to_grayscale(const std::string &imagePath,
     throw exceptions::BMPException("output file is not a .bmp file");
   }
   bmp_parser::Parser parser(imagePath);
-  bmp_parser::BMP image = parser.getPicture();
-  bmp_parser::BMP grayImage = image.convertToGrayScale();
-  grayImage.writeToFile(outputPath);
+  parser.getPicture().convertToGrayScale().writeToFile(outputPath);
 }
 } // namespace bmp
 } // namespace testing

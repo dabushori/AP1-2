@@ -7,10 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <map>
-#include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace bmp_parser {
@@ -21,7 +18,6 @@ private:
   // header members
   char m_magic[2]; // supposed to be 'BM'
   char m_bmpFileSize[4];
-  // addresses 6-9**********
   char m_reserved[4];
   char m_pixelArrayAddress[4];
   // DIB header members
@@ -32,18 +28,17 @@ private:
   char m_bitsPerPixel[2]; // supposed to be 8 or 24
   char m_compression[4];  // supposed to be 0
   char m_bitmapSizeWithoutCompression[4];
-  // addresses 38-43**********
   char m_resolution[8];
   char m_numOfColors[4];
-  // addresses 50-53**********
   char m_numberOfImportantColors[4];
   // color pallete members
   std::vector<Color> m_colors;
-  // bitmap array
+  // bitmap array 8 bits per pixel
+  matrix::Mat m_pixels;
+  // bitmap array 24 bits per pixel
   matrix::Mat m_red;
   matrix::Mat m_green;
   matrix::Mat m_blue;
-  matrix::Mat m_pixels;
 
   /**
    * @brief turn a color into gray with the given formula
@@ -90,10 +85,15 @@ public:
   /**
    * @brief Set the Bmp File Size member
    *
-   * @param bmpFileSize the new bmpFileSize
+   * @param bmpFileSize the new bmpFileSize as a char array
    */
   void setBmpFileSize(const char bmpFileSize[4]);
 
+  /**
+   * @brief Set the Bmp File Size member
+   *
+   * @param size the new bmpFileSize as an integer
+   */
   void setBmpFileSize(const int size);
 
   /**
@@ -106,10 +106,15 @@ public:
   /**
    * @brief Set the Pixel Array Address member
    *
-   * @param pixelArrayAddress the new pixelArrayAddress
+   * @param pixelArrayAddress the new pixelArrayAddress as a char array
    */
   void setPixelArrayAddress(const char pixelArrayAddress[4]);
 
+  /**
+   * @brief Set the Pixel Array Address member
+   *
+   * @param address the new pixelArrayAddress as an integer
+   */
   void setPixelArrayAddress(const int address);
 
   // DIB header setters
@@ -145,10 +150,15 @@ public:
   /**
    * @brief Set the Bits Per Pixel member
    *
-   * @param bitsPerPixel the new bitsPerPixel
+   * @param bitsPerPixel the new bitsPerPixel as a char array
    */
   void setBitsPerPixel(const char bitsPerPixel[2]);
 
+  /**
+   * @brief Set the Bits Per Pixel member
+   *
+   * @param bitsPerPixel the new bitsPerPixel as an integer
+   */
   void setBitsPerPixel(const int &bitsPerPixel);
 
   /**
@@ -176,10 +186,15 @@ public:
   /**
    * @brief Set the Num Of Colors member
    *
-   * @param numOfColors the new numOfColors
+   * @param numOfColors the new numOfColors as a char array
    */
   void setNumOfColors(const char numOfColors[4]);
 
+  /**
+   * @brief Set the Num Of Colors member
+   *
+   * @param numOfColor the new numOfColors as a size_t
+   */
   void setNumOfColors(const size_t numOfColor);
 
   /**
@@ -262,11 +277,8 @@ public:
 
 class Parser {
 private:
-  // std::unique_ptr<BMP> m_picture;
   BMP m_picture;
   std::vector<char> m_data;
-
-  // bytes to int
 
   // header
 
@@ -399,6 +411,8 @@ public:
    */
   BMP getPicture() const;
 };
+
+// some help functions
 
 /**
  * @brief turn 4 chars that represent an unsigned integer to unsigned integer
