@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Mat.h"
 #include "exceptions.h"
+#include "matrix.h"
 
 #include <cmath>
 #include <fstream>
@@ -10,46 +10,50 @@
 #include <string>
 #include <vector>
 
+#define MAGIC_SIZE 2
+#define BMP_FILE_SIZE_SIZE 4
+#define RESERVED_SIZE 4
+#define PIXEL_ARRAY_ADDRESS_SIZE 4
+#define HEADER_SIZE 4
+#define BITMAP_WIDTH_SIZE 4
+#define BITMAP_HEIGHT_SIZE 4
+#define CONSTANT_SIZE 2
+#define BITS_PER_PIXEL_SIZE 2
+#define COMPRESSION_SIZE 4
+#define BITMAP_SIZE_WITHOUT_COMPRESSION_SIZE 4
+#define RESOLUTION_SIZE 8
+#define NUM_OF_COLORS_SIZE 4
+#define NUMBER_OF_IMPORTANT_COLORS_SIZE 4
+
 namespace bmp_parser {
 class Color;
 
 class BMP {
 private:
   // header members
-  char m_magic[2]; // supposed to be 'BM'
-  char m_bmpFileSize[4];
-  char m_reserved[4];
-  char m_pixelArrayAddress[4];
+  char m_magic[MAGIC_SIZE]; // supposed to be 'BM'
+  char m_bmpFileSize[BMP_FILE_SIZE_SIZE];
+  char m_reserved[RESERVED_SIZE];
+  char m_pixelArrayAddress[PIXEL_ARRAY_ADDRESS_SIZE];
   // DIB header members
-  char m_headerSize[4]; // supposed to be 40
-  char m_bitmapWidth[4];
-  char m_bitmapHeight[4];
-  char m_constant[2];     // must be 1
-  char m_bitsPerPixel[2]; // supposed to be 8 or 24
-  char m_compression[4];  // supposed to be 0
-  char m_bitmapSizeWithoutCompression[4];
-  char m_resolution[8];
-  char m_numOfColors[4];
-  char m_numberOfImportantColors[4];
+  char m_headerSize[HEADER_SIZE]; // supposed to be 40
+  char m_bitmapWidth[BITMAP_WIDTH_SIZE];
+  char m_bitmapHeight[BITMAP_HEIGHT_SIZE];
+  char m_constant[CONSTANT_SIZE];           // must be 1
+  char m_bitsPerPixel[BITS_PER_PIXEL_SIZE]; // supposed to be 8 or 24
+  char m_compression[COMPRESSION_SIZE];     // supposed to be 0
+  char m_bitmapSizeWithoutCompression[BITMAP_SIZE_WITHOUT_COMPRESSION_SIZE];
+  char m_resolution[RESOLUTION_SIZE];
+  char m_numOfColors[NUM_OF_COLORS_SIZE];
+  char m_numberOfImportantColors[NUMBER_OF_IMPORTANT_COLORS_SIZE];
   // color pallete members
   std::vector<Color> m_colors;
   // bitmap array 8 bits per pixel
-  matrix::Mat m_pixels;
+  matrix::matrix m_pixels;
   // bitmap array 24 bits per pixel
-  matrix::Mat m_red;
-  matrix::Mat m_green;
-  matrix::Mat m_blue;
-
-  /**
-   * @brief turn a color into gray with the given formula
-   *
-   * @param red the red value of the color
-   * @param green the green value of the color
-   * @param blue the blue value of the color
-   * @return double the value of the gray color that we get (the red, green and
-   * blue values)
-   */
-  double toGray(const char red, const char green, const char blue) const;
+  matrix::matrix m_red;
+  matrix::matrix m_green;
+  matrix::matrix m_blue;
 
 public:
   /**
@@ -80,42 +84,43 @@ public:
    *
    * @param magic the new magic
    */
-  void setMagic(const char magic[2]);
+  void setMagic(const char magic[MAGIC_SIZE]);
 
   /**
    * @brief Set the Bmp File Size member
    *
    * @param bmpFileSize the new bmpFileSize as a char array
    */
-  void setBmpFileSize(const char bmpFileSize[4]);
+  void setBmpFileSize(const char bmpFileSize[BMP_FILE_SIZE_SIZE]);
 
   /**
    * @brief Set the Bmp File Size member
    *
    * @param size the new bmpFileSize as an integer
    */
-  void setBmpFileSize(const int size);
+  void setBmpFileSize(const int &size);
 
   /**
    * @brief Set the Reserved member
    *
    * @param reserved the new reserved
    */
-  void setReserved(const char reserved[4]);
+  void setReserved(const char reserved[RESERVED_SIZE]);
 
   /**
    * @brief Set the Pixel Array Address member
    *
    * @param pixelArrayAddress the new pixelArrayAddress as a char array
    */
-  void setPixelArrayAddress(const char pixelArrayAddress[4]);
+  void
+  setPixelArrayAddress(const char pixelArrayAddress[PIXEL_ARRAY_ADDRESS_SIZE]);
 
   /**
    * @brief Set the Pixel Array Address member
    *
    * @param address the new pixelArrayAddress as an integer
    */
-  void setPixelArrayAddress(const int address);
+  void setPixelArrayAddress(const int &address);
 
   // DIB header setters
 
@@ -124,35 +129,35 @@ public:
    *
    * @param headerSize the new headerSize
    */
-  void setHeaderSize(const char headerSize[4]);
+  void setHeaderSize(const char headerSize[HEADER_SIZE]);
 
   /**
    * @brief Set the Bit Map Width member
    *
    * @param bitmapWidth the new bitmapWidth
    */
-  void setBitMapWidth(const char bitmapWidth[4]);
+  void setBitMapWidth(const char bitmapWidth[BITMAP_WIDTH_SIZE]);
 
   /**
    * @brief Set the Bit Map Height member
    *
    * @param bitmapHeight the new bitmapHeight
    */
-  void setBitMapHeight(const char bitmapHeight[4]);
+  void setBitMapHeight(const char bitmapHeight[BITMAP_HEIGHT_SIZE]);
 
   /**
    * @brief Set the Constant member
    *
    * @param constant the new constant
    */
-  void setConstant(const char constant[2]);
+  void setConstant(const char constant[CONSTANT_SIZE]);
 
   /**
    * @brief Set the Bits Per Pixel member
    *
    * @param bitsPerPixel the new bitsPerPixel as a char array
    */
-  void setBitsPerPixel(const char bitsPerPixel[2]);
+  void setBitsPerPixel(const char bitsPerPixel[BITS_PER_PIXEL_SIZE]);
 
   /**
    * @brief Set the Bits Per Pixel member
@@ -166,43 +171,45 @@ public:
    *
    * @param compression the new compression
    */
-  void setCompression(const char compression[4]);
+  void setCompression(const char compression[COMPRESSION_SIZE]);
 
   /**
    * @brief Set the Bitmap Size Without Compression member
    *
    * @param bitmapSizeWithoutCompression the new bitmapSizeWithoutCompression
    */
-  void
-  setBitmapSizeWithoutCompression(const char bitmapSizeWithoutCompression[4]);
+  void setBitmapSizeWithoutCompression(
+      const char
+          bitmapSizeWithoutCompression[BITMAP_SIZE_WITHOUT_COMPRESSION_SIZE]);
 
   /**
    * @brief Set the Resolution member
    *
    * @param resolution the new resolution
    */
-  void setResolution(const char resolution[8]);
+  void setResolution(const char resolution[RESOLUTION_SIZE]);
 
   /**
    * @brief Set the Num Of Colors member
    *
    * @param numOfColors the new numOfColors as a char array
    */
-  void setNumOfColors(const char numOfColors[4]);
+  void setNumOfColors(const char numOfColors[NUM_OF_COLORS_SIZE]);
 
   /**
    * @brief Set the Num Of Colors member
    *
    * @param numOfColor the new numOfColors as a size_t
    */
-  void setNumOfColors(const size_t numOfColor);
+  void setNumOfColors(const size_t &numOfColor);
 
   /**
    * @brief Set the Num Of Important Colors member
    *
    * @param numOfImportantColors the new numOfImportantColors
    */
-  void setNumOfImportantColors(const char numOfImportantColors[4]);
+  void setNumOfImportantColors(
+      const char numOfImportantColors[NUMBER_OF_IMPORTANT_COLORS_SIZE]);
 
   // color pallete setters
 
@@ -222,15 +229,15 @@ public:
    * @param green the new green member
    * @param blue the new blue member
    */
-  void setBitmapArray(const matrix::Mat &red, const matrix::Mat &green,
-                      const matrix::Mat &blue);
+  void setBitmapArray(const matrix::matrix &red, const matrix::matrix &green,
+                      const matrix::matrix &blue);
 
   /**
    * @brief Set the Bitmap Array member in the case of 8 bits per pixel
    *
    * @param pixels the new pixels member
    */
-  void setBitmapArray(const matrix::Mat &pixels);
+  void setBitmapArray(const matrix::matrix &pixels);
 
   /**
    * @brief Get the Bits Per Pixel member
@@ -450,7 +457,7 @@ public:
    * @param green the green value of this color
    * @param blue the blue value of this color
    */
-  Color(char red, char green, char blue);
+  Color(const char &red, const char &green, const char &blue);
 
   /**
    * @brief Get the Red value
@@ -487,6 +494,6 @@ public:
    * @return true if they are equal
    * @return false otherwise
    */
-  bool isEqual(const Color &other) const;
+  bool operator==(const Color &other) const;
 };
 } // namespace bmp_parser
