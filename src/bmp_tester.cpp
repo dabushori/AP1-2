@@ -15,6 +15,7 @@ bool isBMPFile(const std::string &path) {
 bool isValidFile(const std::string &path) {
   std::ifstream in(path);
   if (!in) {
+    in.close();
     return false;
   }
   in.close();
